@@ -47,7 +47,7 @@ public class InvoiceServiceTest
             Assert.That(result.Id, Is.GreaterThan(0));
             Assert.That(result.OrderId, Is.EqualTo(order.Id));
             Assert.That(result.Order, Is.Not.Null);
-            Assert.That(result.InvoiceNumber, Is.EqualTo("INV-2025:0001"));
+            Assert.That(result.InvoiceNumber, Is.EqualTo("INV-2026:0001"));
         }
     }
 
@@ -124,7 +124,7 @@ public class InvoiceServiceTest
             Assert.That(result.Id, Is.GreaterThan(0));
             Assert.That(result.OrderId, Is.EqualTo(order.Id));
             Assert.That(result.Order, Is.Not.Null);
-            Assert.That(result.InvoiceNumber, Is.EqualTo("INV-2025:0001"));
+            Assert.That(result.InvoiceNumber, Is.EqualTo("INV-2026:0001"));
             Assert.That(result.Order.Items, Is.Not.Empty);
         }
     }
