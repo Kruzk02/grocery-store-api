@@ -34,7 +34,7 @@ public class TokenService(IOptions<JwtSettings> config) : ITokenService
             claims: claims,
             expires: DateTime.UtcNow.AddHours(1),
             signingCredentials: cred);
-        
+
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

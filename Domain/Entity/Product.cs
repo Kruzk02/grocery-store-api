@@ -6,7 +6,7 @@ namespace Domain.Entity;
 public class Product
 {
     [Key]
-    public int  Id { get; init; }
+    public int Id { get; init; }
     [Required, MinLength(3), MaxLength(256)]
     public required string Name { get; set; }
     [MaxLength(512)]

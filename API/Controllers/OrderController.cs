@@ -13,7 +13,7 @@ namespace API.Controllers;
 public class OrderController(IOrderService orderService, IOrderItemService itemService, IInvoiceService invoiceService) : ControllerBase
 {
 
-    [HttpPost, 
+    [HttpPost,
      ProducesResponseType(typeof(Order), 201),
      ProducesResponseType(400),
      ProducesResponseType(500),
@@ -21,14 +21,14 @@ public class OrderController(IOrderService orderService, IOrderItemService itemS
     public async Task<IActionResult> Create([FromBody] OrderDto orderDto)
     {
         var result = await orderService.Create(orderDto);
-        
+
         return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
     }
 
-    [HttpPut("{id:int}"), 
-     ProducesResponseType(200), 
+    [HttpPut("{id:int}"),
+     ProducesResponseType(200),
      ProducesResponseType(400),
-     ProducesResponseType(404), 
+     ProducesResponseType(404),
      ProducesResponseType(500),
      Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(int id, [FromBody] OrderDto orderDto)
@@ -56,7 +56,7 @@ public class OrderController(IOrderService orderService, IOrderItemService itemS
         var result = await itemService.FindByOrderId(id);
         return Ok(result);
     }
-    
+
     [HttpGet("{id:int}/invoice"),
      ProducesResponseType(typeof(Invoice), 200),
      ProducesResponseType(404),
@@ -68,7 +68,7 @@ public class OrderController(IOrderService orderService, IOrderItemService itemS
         var pdf = document.GeneratePdf();
         return File(pdf, "application/pdf");
     }
-    
+
     [HttpDelete("{id:int}"),
      ProducesResponseType(typeof(Order), 204),
      ProducesResponseType(404),
@@ -77,6 +77,6 @@ public class OrderController(IOrderService orderService, IOrderItemService itemS
     public async Task<IActionResult> Delete(int id)
     {
         var result = await orderService.Delete(id);
-        return result ?  NoContent() : BadRequest();
+        return result ? NoContent() : BadRequest();
     }
 }

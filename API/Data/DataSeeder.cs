@@ -10,8 +10,8 @@ public class DataSeeder
     {
         var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        
-        string[] roleNames = [ "Admin", "User" ];
+
+        string[] roleNames = ["Admin", "User"];
 
         foreach (var role in roleNames)
         {
@@ -20,11 +20,11 @@ public class DataSeeder
                 await roleManager.CreateAsync(new IdentityRole(role));
             }
         }
-        
+
         const string adminEmail = "admin@example.com";
         const string adminUsername = "adminUsername";
         const string adminPassword = "Admin@123";
-        
+
         var adminUser = await userManager.FindByEmailAsync(adminEmail);
         if (adminUser == null)
         {

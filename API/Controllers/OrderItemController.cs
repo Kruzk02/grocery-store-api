@@ -10,9 +10,9 @@ namespace API.Controllers;
 [ApiController, Route("[controller]"), Authorize]
 public class OrderItemController(IOrderItemService orderItemService) : ControllerBase
 {
-    [HttpPost, 
-     ProducesResponseType(typeof(OrderItem), 201), 
-     ProducesResponseType(400), 
+    [HttpPost,
+     ProducesResponseType(typeof(OrderItem), 201),
+     ProducesResponseType(400),
      ProducesResponseType(500),
     Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] OrderItemDto orderItemDto)
@@ -21,8 +21,8 @@ public class OrderItemController(IOrderItemService orderItemService) : Controlle
         return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
     }
 
-    [HttpPut("{id:int}"), 
-     ProducesResponseType(typeof(OrderItem), 204), 
+    [HttpPut("{id:int}"),
+     ProducesResponseType(typeof(OrderItem), 204),
      ProducesResponseType(400),
      ProducesResponseType(404),
      ProducesResponseType(500),

@@ -16,13 +16,13 @@ public class CustomerController(ICustomerService customerService, IOrderService 
     public async Task<IActionResult> FindCustomer([FromQuery] string? name, [FromQuery] int skip = 0, [FromQuery] int take = 10)
     {
         var (total, data) = await customerService.SearchCustomers(name, skip, take);
-        return Ok(new{total, data});
+        return Ok(new { total, data });
     }
-    
+
     [HttpGet]
     [ProducesResponseType(typeof(List<Customer>), 200), ProducesResponseType(500)]
     public async Task<IActionResult> FindAll() => Ok(await customerService.FindAll());
-    
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(Customer), 201), ProducesResponseType(500)]
@@ -48,11 +48,11 @@ public class CustomerController(ICustomerService customerService, IOrderService 
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(Customer), 200), ProducesResponseType(404), ProducesResponseType(500)]
     public async Task<IActionResult> FindById(int id) => Ok(await customerService.FindById(id));
-    
+
     [HttpGet("{name}/name")]
     [ProducesResponseType(typeof(Customer), 200), ProducesResponseType(404), ProducesResponseType(500)]
     public async Task<IActionResult> FindByName(string name) => Ok(await customerService.FindByName(name));
-    
+
     [HttpGet("{email}/email")]
     [ProducesResponseType(typeof(Customer), 200), ProducesResponseType(404), ProducesResponseType(500)]
     public async Task<IActionResult> FindByEmail(string email) => Ok(await customerService.FindByEmail(email));

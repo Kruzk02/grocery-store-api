@@ -23,7 +23,7 @@ public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrder
             CustomerId = orderDto.CustomerId,
             Customer = customer
         };
-        
+
         var result = await ctx.Orders.AddAsync(order);
         await ctx.SaveChangesAsync();
 
@@ -45,13 +45,13 @@ public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrder
             {
                 throw new NotFoundException($"Customer with id {orderDto.CustomerId} not found");
             }
-            
+
             order.CustomerId = orderDto.CustomerId;
             order.Customer = customer;
         }
 
         await ctx.SaveChangesAsync();
-        
+
         return order;
     }
 
@@ -74,17 +74,17 @@ public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrder
     public async Task<List<Order>> FindByCustomerId(int customerId)
     {
         var cacheKey = $"customer:{customerId}:orders";
-        if (cache.TryGetValue(cacheKey, out List<Order>? orders)) 
+        if (cache.TryGetValue(cacheKey, out List<Order>? orders))
             if (orders != null)
                 return orders;
-        
+
         orders = await ctx.Orders.Where(o => o.CustomerId == customerId).ToListAsync();
-        
+
         var cacheOptions = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
         cache.Set(cacheKey, orders, cacheOptions);
-        
+
         return orders;
     }
 
@@ -95,7 +95,7 @@ public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrder
         {
             throw new NotFoundException($"Order with id {id} not found");
         }
-        
+
         cache.Remove($"order:{id}");
         ctx.Orders.Remove(order);
         await ctx.SaveChangesAsync();

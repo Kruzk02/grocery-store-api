@@ -15,7 +15,7 @@ public class ExceptionMiddleware(RequestDelegate next)
         {
             await HandleExceptionAsync(httpContext, ex);
         }
-        
+
     }
 
     private async Task HandleExceptionAsync(HttpContext httpContext, System.Exception exception)
@@ -35,7 +35,7 @@ public class ExceptionMiddleware(RequestDelegate next)
                     errors = validationEx.Errors
                 };
                 break;
-            
+
             case NotFoundException notFoundEx:
                 statusCode = 404;
                 result = new
@@ -54,7 +54,7 @@ public class ExceptionMiddleware(RequestDelegate next)
                 };
                 break;
         }
-        
+
         httpContext.Response.StatusCode = statusCode;
         await httpContext.Response.WriteAsJsonAsync(result);
     }

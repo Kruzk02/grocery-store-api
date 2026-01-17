@@ -35,7 +35,7 @@ public class InvoiceServiceTest
             Id = 1,
             CustomerId = 1,
             CreatedAt = DateTime.UtcNow,
-            Customer = new Customer { Name = "Name", Email = "Email@gmail.com",  Phone = "841231245", Address = "asap" },
+            Customer = new Customer { Name = "Name", Email = "Email@gmail.com", Phone = "841231245", Address = "asap" },
         };
         _db.Orders.Add(order);
         await _db.SaveChangesAsync();
@@ -54,9 +54,9 @@ public class InvoiceServiceTest
     [Test]
     public Task Create_ShouldThrowNotFoundException()
     {
-        var ex = Assert.ThrowsAsync<NotFoundException>(async () 
+        var ex = Assert.ThrowsAsync<NotFoundException>(async ()
             => await _invoiceService.Create(new InvoiceDto(1)));
-        
+
         Assert.That(ex.Message, Is.EqualTo($"Order with id: 1 not found"));
         return Task.CompletedTask;
     }
@@ -73,7 +73,7 @@ public class InvoiceServiceTest
         };
         _db.Customers.Add(customer);
         await _db.SaveChangesAsync();
-        
+
         var product = new Product
         {
             Name = "Sample Product",
@@ -83,7 +83,7 @@ public class InvoiceServiceTest
         };
         _db.Products.Add(product);
         await _db.SaveChangesAsync();
-        
+
         var order = new Order
         {
             CustomerId = customer.Id,
@@ -102,12 +102,12 @@ public class InvoiceServiceTest
                     Product = product
                 }
             ],
-            Customer = new Customer { Name = "Name", Email = "Email@gmail.com",  Phone = "841231245", Address = "asap" },
+            Customer = new Customer { Name = "Name", Email = "Email@gmail.com", Phone = "841231245", Address = "asap" },
         };
 
         _db.Orders.Add(order);
         await _db.SaveChangesAsync();
-        
+
         var invoice = new Invoice
         {
             OrderId = order.Id,
@@ -128,13 +128,13 @@ public class InvoiceServiceTest
             Assert.That(result.Order.Items, Is.Not.Empty);
         }
     }
-    
+
     [Test]
     public Task FindById_ShouldThrowNotFoundException()
     {
-        var ex = Assert.ThrowsAsync<NotFoundException>(async () 
+        var ex = Assert.ThrowsAsync<NotFoundException>(async ()
             => await _invoiceService.FindById(1));
-        
+
         Assert.That(ex.Message, Does.Not.Empty);
         return Task.CompletedTask;
     }
@@ -151,7 +151,7 @@ public class InvoiceServiceTest
         };
         _db.Customers.Add(customer);
         await _db.SaveChangesAsync();
-        
+
         var product = new Product
         {
             Name = "Sample Product",
@@ -161,7 +161,7 @@ public class InvoiceServiceTest
         };
         _db.Products.Add(product);
         await _db.SaveChangesAsync();
-        
+
         var order = new Order
         {
             CustomerId = customer.Id,
@@ -185,7 +185,7 @@ public class InvoiceServiceTest
 
         _db.Orders.Add(order);
         await _db.SaveChangesAsync();
-        
+
         var invoice = new Invoice
         {
             OrderId = order.Id,
@@ -194,7 +194,7 @@ public class InvoiceServiceTest
         };
         _db.Invoices.Add(invoice);
         await _db.SaveChangesAsync();
-        
+
         var result = await _invoiceService.FindByOrderId(order.Id);
 
         using (Assert.EnterMultipleScope())
@@ -206,18 +206,18 @@ public class InvoiceServiceTest
             Assert.That(result.Order.Items, Is.Not.Empty);
         }
     }
-    
+
     [Test]
     public Task FindByOrderId_ShouldThrowNotFoundException()
     {
-        var ex = Assert.ThrowsAsync<NotFoundException>(async () 
+        var ex = Assert.ThrowsAsync<NotFoundException>(async ()
             => await _invoiceService.FindByOrderId(1));
-        
+
         Assert.That(ex.Message, Does.Not.Empty);
         return Task.CompletedTask;
     }
 
-    
+
     private static ApplicationDbContext GetInMemoryDbContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()

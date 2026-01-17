@@ -19,7 +19,7 @@ public class NotificationService(ApplicationDbContext ctx) : INotificationServic
     {
         var result = await ctx.Notifications.AddAsync(notification);
         await ctx.SaveChangesAsync();
-        
+
         return result.Entity;
     }
 
@@ -40,10 +40,10 @@ public class NotificationService(ApplicationDbContext ctx) : INotificationServic
         {
             throw new NotFoundException($"Notification with id {id} not found");
         }
-        
+
         ctx.Notifications.Remove(notification);
         await ctx.SaveChangesAsync();
-        
+
         return "Notification Deleted Successfully";
     }
 
@@ -55,7 +55,7 @@ public class NotificationService(ApplicationDbContext ctx) : INotificationServic
         {
             throw new NotFoundException($"Notification with id {id} not found");
         }
-        
+
         notification.IsRead = true;
         await ctx.SaveChangesAsync();
         return notification;

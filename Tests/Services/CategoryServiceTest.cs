@@ -9,7 +9,7 @@ namespace Tests.Services;
 [TestFixture]
 public class CategoryServiceTest
 {
-    
+
     private static ApplicationDbContext GetInMemoryDbContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -18,7 +18,7 @@ public class CategoryServiceTest
 
         return new ApplicationDbContext(options);
     }
-    
+
     [Test]
     [TestCaseSource(nameof(CreateCategories))]
     public async Task GetAllCategories_ShouldReturn_ListOfCategory(List<Category> category)
@@ -26,7 +26,7 @@ public class CategoryServiceTest
         var ctx = GetInMemoryDbContext();
         foreach (var item in category) ctx.Categories.Add(item);
         await ctx.SaveChangesAsync();
-        
+
         var service = new CategoryService(ctx, new MemoryCache(new MemoryCacheOptions()));
 
         var result = service.FindAll();

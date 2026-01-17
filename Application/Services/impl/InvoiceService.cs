@@ -22,7 +22,7 @@ public class InvoiceService(ApplicationDbContext ctx) : IInvoiceService
             DueDate = DateTime.UtcNow.AddDays(30),
             InvoiceNumber = $"INV-{DateTime.UtcNow.Year}:{order.Id:D4}"
         };
-        
+
         var result = await ctx.Invoices.AddAsync(invoice);
         await ctx.SaveChangesAsync();
 
@@ -38,7 +38,7 @@ public class InvoiceService(ApplicationDbContext ctx) : IInvoiceService
                 .ThenInclude(o => o.Items)
                     .ThenInclude(i => i.Product)
             .FirstOrDefaultAsync(i => i.Id == id);
-        
+
         return invoice ?? throw new NotFoundException($"Invoice with id: {id} not found");
     }
 

@@ -12,7 +12,7 @@ public class Order
     [ForeignKey(nameof(CustomerId))]
     public required Customer Customer { get; set; }
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
-    
+
     public List<OrderItem> Items { get; init; } = [];
 
     public decimal Total => Items.Sum(i => i.Quantity * i.Product.Price);

@@ -22,15 +22,15 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
     {
         const string cacheKey = $"inventories";
         if (cache.TryGetValue(cacheKey, out List<Inventory>? inventories))
-            if (inventories != null) 
+            if (inventories != null)
                 return inventories;
-        
+
         inventories = await ctx.Inventories.ToListAsync();
 
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
-        
+
         cache.Set(cacheKey, inventories, cacheOption);
 
         return inventories;
@@ -55,7 +55,7 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
 
         var result = await ctx.Inventories.AddAsync(inventory);
         await ctx.SaveChangesAsync();
-        
+
         return result.Entity;
     }
 
@@ -84,10 +84,10 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
             inventory.Product = product;
             inventory.ProductId = product.Id;
         }
-        
+
         inventory.UpdatedAt = DateTime.UtcNow;
         await ctx.SaveChangesAsync();
-        
+
         return inventory;
     }
 
@@ -95,19 +95,19 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
     public async Task<Inventory> FindById(int id)
     {
         var cacheKey = $"inventory:{id}";
-        if (cache.TryGetValue(cacheKey, out Inventory? inventory)) 
+        if (cache.TryGetValue(cacheKey, out Inventory? inventory))
             if (inventory != null)
                 return inventory;
-        
+
         inventory = await ctx.Inventories.FindAsync(id);
 
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
-        
+
         cache.Set(cacheKey, inventory, cacheOption);
-        
-        return inventory ?? throw new  NotFoundException($"Inventory with id: {id} not found");
+
+        return inventory ?? throw new NotFoundException($"Inventory with id: {id} not found");
     }
 
     /// <inheritdoc />
@@ -118,11 +118,11 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
         {
             throw new NotFoundException($"Inventory with id: {id} not found");
         }
-        
+
         cache.Remove($"inventory:{id}");
         ctx.Inventories.Remove(inventory);
         await ctx.SaveChangesAsync();
-        
-        return"Inventory deleted successfully";
+
+        return "Inventory deleted successfully";
     }
 }

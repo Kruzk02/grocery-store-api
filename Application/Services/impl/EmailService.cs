@@ -19,7 +19,7 @@ public class EmailService(IConfiguration configuration)
         mail.Subject = "Email verify";
         mail.Body = "Code: " + code;
         mail.IsBodyHtml = true;
-        
+
         smtp.SendMailAsync(mail);
     }
 }

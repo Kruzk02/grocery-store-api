@@ -24,7 +24,7 @@ public class ProductService(ApplicationDbContext ctx, IMemoryCache cache) : IPro
         {
             query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{name.ToLower()}%"));
         }
-        
+
         var total = await query.CountAsync();
         var data = await query.Skip(skip).Take(take).ToListAsync();
 
@@ -39,7 +39,7 @@ public class ProductService(ApplicationDbContext ctx, IMemoryCache cache) : IPro
         {
             throw new NotFoundException($"Category with id {productDto.CategoryId} not found");
         }
-        
+
         var product = new Product
         {
             Name = productDto.Name,
@@ -51,10 +51,10 @@ public class ProductService(ApplicationDbContext ctx, IMemoryCache cache) : IPro
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-        
+
         var result = await ctx.Products.AddAsync(product);
         await ctx.SaveChangesAsync();
-        
+
         return result.Entity;
     }
 
@@ -86,15 +86,15 @@ public class ProductService(ApplicationDbContext ctx, IMemoryCache cache) : IPro
             {
                 throw new NotFoundException($"Category with id {productDto.CategoryId} not found");
             }
-            
+
             product.CategoryId = category.Id;
             product.Category = category;
         }
-        
+
         product.UpdatedAt = DateTime.UtcNow;
 
         await ctx.SaveChangesAsync();
-        
+
         return product;
     }
 
@@ -126,11 +126,11 @@ public class ProductService(ApplicationDbContext ctx, IMemoryCache cache) : IPro
         {
             throw new NotFoundException($"Product with id {id} not found");
         }
-        
+
         cache.Remove($"product:{id}");
         ctx.Products.Remove(product);
         await ctx.SaveChangesAsync();
-        
+
         return true;
     }
 }

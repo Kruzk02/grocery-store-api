@@ -13,7 +13,7 @@ public interface IProductService
     /// Asynchronously retrieves products with the name from the database.
     /// </summary>
     Task<(int total, List<Product> data)> SearchProducts(string? name, int skip, int take);
-    
+
     /// <summary>
     /// Asynchronously creates a new product in the database.
     /// </summary>

@@ -12,12 +12,12 @@ public class OrderItem
     public int OrderId { get; init; }
     [ForeignKey(nameof(OrderId)), JsonIgnore]
     public required Order Order { get; init; }
-    
+
     [Required]
     public int ProductId { get; set; }
     [ForeignKey(nameof(ProductId))]
     public required Product Product { get; init; }
-    
+
     [Required]
     [Range(1, int.MaxValue)]
     public int Quantity { get; set; }

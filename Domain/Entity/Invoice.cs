@@ -11,11 +11,11 @@ public class Invoice
     public int OrderId { get; init; }
     [ForeignKey(nameof(OrderId))]
     public required Order Order { get; init; }
-    
+
     [Required]
     [MaxLength(50)]
     public string InvoiceNumber { get; init; } = string.Empty;
-    
+
     public DateTime IssueDate { get; init; }
     public DateTime DueDate { get; init; }
 }

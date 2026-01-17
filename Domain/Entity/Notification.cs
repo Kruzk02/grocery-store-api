@@ -5,9 +5,9 @@ namespace Domain.Entity;
 public class Notification
 {
     [Key]
-    public int Id { get; init; } 
+    public int Id { get; init; }
     [Required, MaxLength(128)]
-    public required string UserId { get; init; } 
+    public required string UserId { get; init; }
     public NotificationType Type { get; init; } = NotificationType.Info;
     [Required, MaxLength(500)]
     public required string Message { get; init; }

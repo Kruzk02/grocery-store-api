@@ -9,7 +9,7 @@ namespace API.Controllers;
 [ApiController, Route("[controller]"), Authorize]
 public class NotificationController(INotificationService notificationService) : ControllerBase
 {
-    
+
     [HttpDelete("{id:int}")]
     [ProducesResponseType(typeof(Notification), 204)]
     [ProducesResponseType(404)]
@@ -19,7 +19,7 @@ public class NotificationController(INotificationService notificationService) : 
         await notificationService.DeleteById(id);
         return NoContent();
     }
-    
+
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(Notification), 200)]
     [ProducesResponseType(404)]
@@ -29,7 +29,7 @@ public class NotificationController(INotificationService notificationService) : 
         var result = await notificationService.MarkAsRead(id);
         return Ok(result);
     }
-    
+
     [HttpPut("all-as-read")]
     [ProducesResponseType(typeof(Notification), 200)]
     [ProducesResponseType(404)]

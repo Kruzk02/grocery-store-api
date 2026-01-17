@@ -65,7 +65,7 @@ public class ProductController(IProductService productService, IOrderItemService
     public async Task<IActionResult> Create([FromBody] ProductDto productDto)
     {
         var result = await productService.Create(productDto);
-        return CreatedAtAction(nameof(FindById), new { id = result.Id }, result );
+        return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ public class ProductController(IProductService productService, IOrderItemService
         var result = await productService.FindById(id);
         return Ok(result);
     }
-    
+
     [HttpGet("{id:int}/ordersItem")]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]

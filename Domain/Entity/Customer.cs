@@ -14,7 +14,7 @@ public class Customer
     public required string Phone { get; set; }
     [Required, MinLength(3), MaxLength(255)]
     public required string Address { get; set; }
-    
+
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -11,10 +11,10 @@ namespace Tests.Services;
 [TestFixture]
 public class CustomerServiceTest
 {
-    
+
     private CustomerService _customerService;
     private ApplicationDbContext _dbContext;
-    
+
     [SetUp]
     public void SetUp()
     {
@@ -25,7 +25,7 @@ public class CustomerServiceTest
     [TearDown]
     public void TearDown()
     {
-        _dbContext.Dispose();    
+        _dbContext.Dispose();
     }
 
     [Test]
@@ -35,7 +35,7 @@ public class CustomerServiceTest
         await _customerService.Create(customerDto);
 
         var result = await _customerService.FindAll();
-        
+
         Assert.That(result, !Is.Empty);
     }
 
@@ -52,7 +52,7 @@ public class CustomerServiceTest
             Assert.That(data, Is.Not.Null);
         }
     }
-    
+
     [Test]
     [TestCaseSource(nameof(CreateCustomerDto))]
     public async Task CreateSuccess(CustomerDto customerDto)
@@ -64,7 +64,7 @@ public class CustomerServiceTest
             Assert.That(result.Id, Is.GreaterThan(0));
         }
     }
-    
+
     [TestCase("", "e@mail.com", "123", "addr", "Name")]
     [TestCase("Name", "", "123", "addr", "Email")]
     [TestCase("Name", "e@mail.com", "", "addr", "Phone")]
@@ -94,7 +94,7 @@ public class CustomerServiceTest
         await _customerService.Create(new CustomerDto("Name", "Email@gmail.com", "843806784", "1b22"));
 
         var result = await _customerService.Update(1, new CustomerDto("Name13", "Emai44l@gmail.com", "843806784", "1b22"));
-        
+
         Assert.That(result, Is.EqualTo("Customer updated successfully"));
     }
 
@@ -107,7 +107,7 @@ public class CustomerServiceTest
     {
         var ex = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _customerService.Update(1, new CustomerDto(name, email, phone, address)));
-        
+
         Assert.That(ex.Message, Is.EqualTo($"Customer with id: 1 not found"));
 
         return Task.CompletedTask;
@@ -138,12 +138,12 @@ public class CustomerServiceTest
     [TestCase(4)]
     public Task FindById_ShouldThrowNotFoundException(int id)
     {
-        var ex = Assert.ThrowsAsync<NotFoundException>(async () => 
+        var ex = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _customerService.FindById(id));
         Assert.That(ex.Message, Is.EqualTo($"Customer with id: {id} not found"));
         return Task.CompletedTask;
     }
-    
+
     [Test]
     [TestCaseSource(nameof(CreateCustomerDto))]
     public async Task FindByName(CustomerDto customerDto)
@@ -161,7 +161,7 @@ public class CustomerServiceTest
             Assert.That(result.Address, Is.EqualTo(customer.Address));
         }
     }
-    
+
     [Test]
     [TestCase("we")]
     [TestCase("zx")]
@@ -169,12 +169,12 @@ public class CustomerServiceTest
     [TestCase("ff")]
     public Task FindByName_ShouldThrowNotFoundException(string name)
     {
-        var ex = Assert.ThrowsAsync<NotFoundException>(async () => 
+        var ex = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _customerService.FindByName(name));
         Assert.That(ex.Message, Is.EqualTo($"Customer with name: {name} not found"));
         return Task.CompletedTask;
     }
-    
+
     [Test]
     [TestCaseSource(nameof(CreateCustomerDto))]
     public async Task FindByEmail(CustomerDto customerDto)
@@ -192,7 +192,7 @@ public class CustomerServiceTest
             Assert.That(result.Address, Is.EqualTo(customer.Address));
         }
     }
-    
+
     [Test]
     [TestCase("we@gmail.com")]
     [TestCase("zx@gmail.com")]
@@ -200,12 +200,12 @@ public class CustomerServiceTest
     [TestCase("ff@gmail.com")]
     public Task FindByEmail_ShouldThrowNotFoundException(string email)
     {
-        var ex = Assert.ThrowsAsync<NotFoundException>(async () => 
+        var ex = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _customerService.FindByEmail(email));
         Assert.That(ex.Message, Is.EqualTo($"Customer with email: {email} not found"));
         return Task.CompletedTask;
     }
-    
+
     [Test]
     [TestCaseSource(nameof(CreateCustomerDto))]
     public async Task FindByPhoneNumber(CustomerDto customerDto)
@@ -223,14 +223,14 @@ public class CustomerServiceTest
             Assert.That(result.Address, Is.EqualTo(customer.Address));
         }
     }
-    
+
     [Test]
     [TestCase("123")]
     [TestCase("456")]
     [TestCase("789")]
     public Task FindByPhone_ShouldThrowNotFoundException(string phone)
     {
-        var ex = Assert.ThrowsAsync<NotFoundException>(async () => 
+        var ex = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _customerService.FindByPhoneNumber(phone));
         Assert.That(ex.Message, Is.EqualTo($"Customer with number: {phone} not found"));
         return Task.CompletedTask;
@@ -243,10 +243,10 @@ public class CustomerServiceTest
         var customer = await _customerService.Create(customerDto);
 
         var result = await _customerService.DeleteById(customer.Id);
-        
+
         Assert.That(result, Is.EqualTo("Customer deleted successfully"));
     }
-    
+
     [Test]
     [TestCase(1)]
     [TestCase(2)]
@@ -254,7 +254,7 @@ public class CustomerServiceTest
     [TestCase(4)]
     public Task DeleteById_ShouldThrowNotFoundException(int id)
     {
-        var ex = Assert.ThrowsAsync<NotFoundException>(async () => 
+        var ex = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _customerService.DeleteById(id));
         Assert.That(ex.Message, Is.EqualTo($"Customer with id: {id} not found"));
         return Task.CompletedTask;
@@ -267,8 +267,8 @@ public class CustomerServiceTest
         yield return new CustomerDto("Name3", "Email3@gmail.com", "843806554", "1b25");
         yield return new CustomerDto("Nam5e", "Email4@gmail.com", "843806424", "1b26");
         yield return new CustomerDto("Name6", "Email5@gmail.com", "843806324", "1b27");
-    } 
-    
+    }
+
     private static ApplicationDbContext GetInMemoryDbContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()

@@ -15,7 +15,7 @@ public class UserController(
         INotificationService notificationService
     ) : ControllerBase
 {
-    
+
     [HttpGet("me")]
     public async Task<IActionResult> Me()
     {

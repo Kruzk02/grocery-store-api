@@ -19,13 +19,13 @@ public class TokenServiceTest
         return new Mock<UserManager<TUser>>(
             store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
     }
-    
+
     [Test]
     [TestCaseSource(nameof(CreateApplicationUser))]
     public async Task CreateToken_ShouldReturn_ValidJwtToken(ApplicationUser user)
     {
         var mockUserManager = MockUserManager<ApplicationUser>();
-        
+
         mockUserManager
             .Setup(m => m.GetClaimsAsync(It.IsAny<ApplicationUser>()))
             .ReturnsAsync(new List<Claim>());
@@ -33,7 +33,7 @@ public class TokenServiceTest
         mockUserManager
             .Setup(m => m.GetRolesAsync(It.IsAny<ApplicationUser>()))
             .ReturnsAsync(new List<string>());
-        
+
         var userManager = mockUserManager.Object;
 
         var jwtSettings = new JwtSettings
@@ -59,7 +59,7 @@ public class TokenServiceTest
         {
             Assert.That(user.Id, Is.EqualTo(jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.Sub).Value));
             Assert.That(user.UserName, Is.EqualTo(jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.UniqueName).Value));
-            Assert.That(user.Email, Is.EqualTo(jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value)); 
+            Assert.That(user.Email, Is.EqualTo(jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value));
         }
     }
 
@@ -71,14 +71,14 @@ public class TokenServiceTest
             UserName = "testuser",
             Email = "test@example.com"
         };
-        
+
         yield return new ApplicationUser
         {
             Id = "456",
             UserName = "testuser123",
             Email = "test@example.com"
         };
-        
+
         yield return new ApplicationUser
         {
             Id = "789",

@@ -69,7 +69,7 @@ public class InvoiceDocument(Invoice invoice) : IDocument
                     columns.RelativeColumn();
                     columns.RelativeColumn();
                 });
-                
+
                 table.Header(header =>
                 {
                     header.Cell().Element(CellStyle).Text("#");
@@ -99,12 +99,12 @@ public class InvoiceDocument(Invoice invoice) : IDocument
                         return container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(5);
                     }
                 }
-            }); 
+            });
     }
 
     private void ComposeContent(IContainer container)
     {
-        container.PaddingVertical(40).Column(column => 
+        container.PaddingVertical(40).Column(column =>
         {
             column.Spacing(5);
 
