@@ -1,17 +1,23 @@
 using System.Text;
+
 using API.Data;
 using API.Middleware;
+
 using Application.Services;
 using Application.Services.impl;
 using Application.Settings;
+
 using Domain.Entity;
+
 using Infrastructure.Persistence;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
 using QuestPDF;
 using QuestPDF.Infrastructure;
 

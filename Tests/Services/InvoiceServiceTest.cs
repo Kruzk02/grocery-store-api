@@ -1,9 +1,11 @@
-﻿using Application.Dtos;
 using Application.Dtos.Request;
 using Application.Services.impl;
+
 using Domain.Entity;
 using Domain.Exception;
+
 using Infrastructure.Persistence;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Tests.Services;
@@ -91,16 +93,16 @@ public class InvoiceServiceTest
             Items =
             [
                 new OrderItem
-                {
-                    ProductId = product.Id,
-                    Quantity = 1,
-                    Order = new Order
                     {
-                        Customer = customer,
-                        CreatedAt = DateTime.UtcNow,
-                    },
-                    Product = product
-                }
+                        ProductId = product.Id,
+                        Quantity = 1,
+                        Order = new Order
+                        {
+                            Customer = customer,
+                            CreatedAt = DateTime.UtcNow,
+                        },
+                        Product = product
+                    }
             ],
             Customer = new Customer { Name = "Name", Email = "Email@gmail.com", Phone = "841231245", Address = "asap" },
         };

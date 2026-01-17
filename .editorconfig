@@ -1,0 +1,80 @@
+# =========================
+# Root
+# =========================
+root = true
+
+# =========================
+# Global
+# =========================
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# =========================
+# C# files
+# =========================
+[*.cs]
+
+# ----- Indentation -----
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# ----- Using directives -----
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = true
+
+# ----- New lines & braces -----
+csharp_new_line_before_open_brace = all
+csharp_new_line_between_query_expression_clauses = true
+
+# ----- Spacing -----
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_around_binary_operators = before_and_after
+
+# ----- var preferences (Rider default) -----
+csharp_style_var_for_built_in_types = true
+csharp_style_var_when_type_is_apparent = true
+csharp_style_var_elsewhere = false
+
+# ----- Expression-bodied members -----
+csharp_style_expression_bodied_methods = false
+csharp_style_expression_bodied_properties = true
+csharp_style_expression_bodied_accessors = true
+csharp_style_expression_bodied_constructors = false
+
+# ----- Pattern matching & modern C# -----
+csharp_style_prefer_pattern_matching = true
+csharp_style_prefer_switch_expression = true
+csharp_style_prefer_not_pattern = true
+
+# ----- Parentheses clarity -----
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity
+dotnet_style_parentheses_in_other_binary_operators = never_if_unnecessary
+
+# ----- Naming conventions (Rider-like) -----
+dotnet_naming_rule.private_fields_should_be_camel_case.severity = suggestion
+dotnet_naming_rule.private_fields_should_be_camel_case.symbols = private_fields
+dotnet_naming_rule.private_fields_should_be_camel_case.style = camel_case_underscore
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.camel_case_underscore.required_prefix = _
+dotnet_naming_style.camel_case_underscore.capitalization = camel_case
+
+# ----- Code quality (Rider inspections) -----
+dotnet_diagnostic.IDE0005.severity = warning   # Remove unused usings
+dotnet_diagnostic.IDE0060.severity = warning   # Remove unused parameters
+dotnet_diagnostic.IDE0058.severity = suggestion # Expression value is never used
+dotnet_diagnostic.IDE0044.severity = suggestion # Make field readonly
+
+# ----- .NET analyzers (Rider enables many by default) -----
+dotnet_analyzer_diagnostic.severity = suggestion
+

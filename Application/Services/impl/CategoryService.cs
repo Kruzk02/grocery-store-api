@@ -1,5 +1,7 @@
-﻿using Domain.Entity;
+using Domain.Entity;
+
 using Infrastructure.Persistence;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 

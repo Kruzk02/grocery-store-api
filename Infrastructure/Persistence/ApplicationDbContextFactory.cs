@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Persistence;
+namespace Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;

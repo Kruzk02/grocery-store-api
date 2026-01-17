@@ -1,4 +1,4 @@
-﻿namespace Domain.Exception;
+namespace Domain.Exception;
 
 public class ValidationException(Dictionary<string, string[]> errors) : System.Exception("Validation Error")
 {
