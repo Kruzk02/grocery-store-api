@@ -9,6 +9,7 @@ using Application.Settings;
 
 using Domain.Entity;
 
+using Infrastructure.FileSystem;
 using Infrastructure.Persistence;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,6 +43,8 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+
+builder.Services.AddSingleton<IImageStorage>(new FileSystemImageStorage(Path.Combine(builder.Environment.WebRootPath, "uploads/images")));
 
 builder.Services.AddHostedService<DailyCheckService>();
 
