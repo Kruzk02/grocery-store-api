@@ -19,7 +19,7 @@ namespace Application.Services.impl;
 /// <param name="ctx">the <see cref="ApplicationDbContext"/> used to access the database.</param>
 public class ProductService(ApplicationDbContext ctx, IMemoryCache cache) : IProductService
 {
-    public async Task<(int total, List<Product> data)> SearchProducts(string name, int skip, int take)
+    public async Task<(int total, List<Product> data)> SearchProducts(string? name, int skip, int take)
     {
         var query = ctx.Products.AsQueryable();
         if (!string.IsNullOrEmpty(name))
@@ -50,6 +50,7 @@ public class ProductService(ApplicationDbContext ctx, IMemoryCache cache) : IPro
             Quantity = productDto.Quantity,
             CategoryId = productDto.CategoryId,
             Category = category,
+            imagePath = productDto.filename,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

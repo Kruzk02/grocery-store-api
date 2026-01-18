@@ -17,6 +17,7 @@ public class Product
     [ForeignKey(nameof(CategoryId))]
     public required Category Category { get; set; }
     public int Quantity { get; set; }
+    public string? imagePath { get; set; }
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; set; }
 }
