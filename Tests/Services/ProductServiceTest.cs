@@ -57,7 +57,7 @@ public class ProductServiceTest
         var ex = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _productService.Create(productDto));
 
-        Assert.That(ex.Message, Is.EqualTo($"Category with id {productDto.CategoryId} not found"));
+        Assert.That(ex!.Message, Is.EqualTo($"Category with id {productDto.CategoryId} not found"));
         return Task.CompletedTask;
     }
 
@@ -71,7 +71,7 @@ public class ProductServiceTest
 
         var product = await _productService.Create(productDto);
 
-        var result = await _productService.Update(product.Id, new ProductDto(Name: "name123", Description: "description123", Price: 11.99m, CategoryId: 1, Quantity: 44));
+        var result = await _productService.Update(product.Id, new ProductDto(Name: "name123", Description: "description123", Price: 11.99m, CategoryId: 1, Quantity: 44, "image.jpg"));
 
         using (Assert.EnterMultipleScope())
         {
@@ -90,7 +90,7 @@ public class ProductServiceTest
         var ex = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _productService.Update(1, productDto));
 
-        Assert.That(ex.Message, Is.EqualTo("Product with id 1 not found"));
+        Assert.That(ex!.Message, Is.EqualTo("Product with id 1 not found"));
         return Task.CompletedTask;
     }
 
@@ -144,7 +144,7 @@ public class ProductServiceTest
         var ex = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _productService.FindById(id));
 
-        Assert.That(ex.Message, Is.EqualTo($"Product with id {id} not found"));
+        Assert.That(ex!.Message, Is.EqualTo($"Product with id {id} not found"));
         return Task.CompletedTask;
     }
 
@@ -173,15 +173,15 @@ public class ProductServiceTest
         var ex = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _productService.DeleteById(id));
 
-        Assert.That(ex.Message, Is.EqualTo($"Product with id {id} not found"));
+        Assert.That(ex!.Message, Is.EqualTo($"Product with id {id} not found"));
         return Task.CompletedTask;
     }
 
     private static IEnumerable<ProductDto> CreateProductDto()
     {
-        yield return new ProductDto(Name: "name123", Description: "description3", Price: 2.99m, CategoryId: 1, Quantity: 1);
-        yield return new ProductDto(Name: "name4", Description: "description", Price: 5.99m, CategoryId: 1, Quantity: 1);
-        yield return new ProductDto(Name: "name56", Description: "description", Price: 6.99m, CategoryId: 1, Quantity: 1);
+        yield return new ProductDto(Name: "name123", Description: "description3", Price: 2.99m, CategoryId: 1, Quantity: 1, "image.jpg");
+        yield return new ProductDto(Name: "name4", Description: "description", Price: 5.99m, CategoryId: 1, Quantity: 1, "image.jpg");
+        yield return new ProductDto(Name: "name56", Description: "description", Price: 6.99m, CategoryId: 1, Quantity: 1, "image.jpg");
     }
 
     private static ApplicationDbContext GetInMemoryDbContext()
