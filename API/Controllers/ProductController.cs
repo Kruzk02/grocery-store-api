@@ -1,7 +1,11 @@
+using API.Dto;
+
 using Application.Dtos.Request;
 using Application.Services;
 
 using Domain.Entity;
+
+using Infrastructure.FileSystem;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,21 +20,21 @@ namespace API.Controllers;
 /// </remarks>
 /// <param name="productService"></param>
 [ApiController, Route("[controller]"), Authorize]
-public class ProductController(IProductService productService, IOrderItemService itemService) : ControllerBase
+public class ProductController(IProductService productService, IOrderItemService itemService, IImageStorage imageStorage) : ControllerBase
 {
     /// <summary>
     /// Searches for products by name, or returns all products if no name is provided.
     /// </summary>
     /// <param name="name">
-    /// Optional. The product name (full or partial) to search for. 
+    /// Optional. The product name (full or partial) to search for.
     /// Case-insensitive. If null or empty, all products are returned.
     /// </param>
     /// <param name="skip">
-    /// The number of products to skip (for pagination). 
+    /// The number of products to skip (for pagination).
     /// Defaults to 0.
     /// </param>
     /// <param name="take">
-    /// The maximum number of products to return. 
+    /// The maximum number of products to return.
     /// Defaults to 10.
     /// </param>
     /// <returns>
@@ -63,8 +67,18 @@ public class ProductController(IProductService productService, IOrderItemService
     [ProducesResponseType(typeof(Product), 201)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> Create([FromBody] ProductDto productDto)
+    public async Task<IActionResult> Create([FromBody] CreatedProductDto createdProductDto)
     {
+        string filename = "";
+        if (createdProductDto.photo != null)
+        {
+            using var stream = createdProductDto.photo.OpenReadStream();
+
+            filename = await imageStorage.Save(stream, Path.GetExtension(createdProductDto.photo.FileName), createdProductDto.photo.ContentType);
+        }
+
+        ProductDto productDto = new(createdProductDto.Name, createdProductDto.Description, createdProductDto.Price, createdProductDto.CategoryId, createdProductDto.Quantity, filename);
+
         var result = await productService.Create(productDto);
         return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
     }
