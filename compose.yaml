@@ -1,4 +1,4 @@
-﻿services:
+services:
   nginx:
     build:
       context: .
@@ -23,7 +23,7 @@
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=grocery_store;Username=root;Password=Password
     networks:
       - db
-    
+
   db:
     container_name: postgres
     image: postgres
@@ -32,7 +32,7 @@
       POSTGRES_PASSWORD: Password
       PGDATA: /data/postgres
       POSTGRES_DB: grocery_store
-      
+
     volumes:
       - db:/data/postgres
     ports:

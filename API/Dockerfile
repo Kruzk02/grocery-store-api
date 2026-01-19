@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
@@ -19,5 +19,7 @@ RUN dotnet publish "./API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:Use
 
 FROM base AS final
 WORKDIR /app
+RUN mkdir -p /app/uploads/images \
+  && chown -R app:app /app/uploads
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "API.dll"]
