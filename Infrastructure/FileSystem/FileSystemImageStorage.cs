@@ -8,7 +8,8 @@ public class FileSystemImageStorage : IImageStorage
 
     public FileSystemImageStorage(string rootPath)
     {
-        _rootPath = rootPath;
+        _rootPath = rootPath ?? throw new ArgumentNullException(nameof(rootPath));
+        Directory.CreateDirectory(_rootPath);
     }
 
     public async Task<String> Save(Stream imageStream, string fileExtension, string contentType)
@@ -25,6 +26,11 @@ public class FileSystemImageStorage : IImageStorage
         await imageStream.CopyToAsync(fs);
 
         return filename;
+    }
+
+    public string GetImage(string filename)
+    {
+        return Path.Combine(_rootPath, filename);
     }
 
     public Task Delete(string filename)

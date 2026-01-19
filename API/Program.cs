@@ -44,7 +44,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
-builder.Services.AddSingleton<IImageStorage>(new FileSystemImageStorage(Path.Combine(builder.Environment.WebRootPath, "uploads/images")));
+builder.Services.AddSingleton<IImageStorage>(new FileSystemImageStorage(Path.Combine(builder.Environment.ContentRootPath, "uploads/images")));
 
 builder.Services.AddHostedService<DailyCheckService>();
 
@@ -89,6 +89,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseStaticFiles();
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();

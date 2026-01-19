@@ -67,7 +67,7 @@ public class ProductController(IProductService productService, IOrderItemService
     [ProducesResponseType(typeof(Product), 201)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> Create([FromBody] CreatedProductDto createdProductDto)
+    public async Task<IActionResult> Create([FromForm] CreatedProductDto createdProductDto)
     {
         string filename = "";
         if (createdProductDto.photo != null)
@@ -81,6 +81,17 @@ public class ProductController(IProductService productService, IOrderItemService
 
         var result = await productService.Create(productDto);
         return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
+    }
+
+    [HttpGet("{filename}")]
+    [ProducesResponseType(400), ProducesResponseType(500)]
+    public IActionResult GetImage(string filename)
+    {
+        var path = imageStorage.GetImage(filename);
+        if (!System.IO.File.Exists(path)) NotFound();
+        var extension = Path.GetExtension(filename);
+
+        return PhysicalFile(path, $"image/{extension.Replace(".", string.Empty)}");
     }
 
     /// <summary>
