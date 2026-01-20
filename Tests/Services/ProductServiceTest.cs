@@ -1,9 +1,11 @@
+using Application.Common;
 using Application.Dtos.Request;
 using Application.Services;
 
 using Domain.Entity;
 using Domain.Exception;
 
+using Infrastructure.FileSystem;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
 
@@ -16,13 +18,15 @@ namespace Tests.Services;
 public class ProductServiceTest
 {
     private IProductService _productService;
+    private IImageStorage _imageService;
     private ApplicationDbContext _context;
 
     [SetUp]
     public void SetUp()
     {
         _context = GetInMemoryDbContext();
-        _productService = new ProductService(_context, new MemoryCache(new MemoryCacheOptions()));
+        _imageService = new FileSystemImageStorage("");
+        _productService = new ProductService(_context, _imageService, new MemoryCache(new MemoryCacheOptions()));
     }
 
     [TearDown]

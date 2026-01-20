@@ -8,6 +8,7 @@ using Domain.Entity;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace API.Controllers;
 
@@ -83,18 +84,27 @@ public class ProductController(IProductService productService, IOrderItemService
     }
 
     [HttpGet("{filename}")]
-    [ProducesResponseType(400), ProducesResponseType(500)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public IActionResult GetImage(string filename)
     {
+        if (string.IsNullOrWhiteSpace(filename))
+            return BadRequest();
+
         var path = imageStorage.GetImage(filename);
-        if (!System.IO.File.Exists(path)) NotFound();
+
+        if (!System.IO.File.Exists(path))
+            return NotFound();
+
         var extension = Path.GetExtension(filename);
 
-        if (extension == ".jpg") {
-            extension = ".jpeg";
-        }
+        var contentTypeProvider = new FileExtensionContentTypeProvider();
 
-        return PhysicalFile(path, $"image/{extension.Replace(".", string.Empty)}");
+        if (!contentTypeProvider.TryGetContentType(filename, out var contentType))
+            contentType = "application/octet-stream";
+
+        return PhysicalFile(path, contentType, enableRangeProcessing: true);
     }
 
     /// <summary>
