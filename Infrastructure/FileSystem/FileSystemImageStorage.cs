@@ -1,3 +1,5 @@
+using Application.Common;
+
 namespace Infrastructure.FileSystem;
 
 public class FileSystemImageStorage : IImageStorage

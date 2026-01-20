@@ -2,10 +2,10 @@ using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-using Application.Services.impl;
 using Application.Settings;
 
-using Domain.Entity;
+using Infrastructure.Services;
+using Infrastructure.Users;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

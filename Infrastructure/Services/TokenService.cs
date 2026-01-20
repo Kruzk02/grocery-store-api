@@ -3,18 +3,17 @@ using System.Security.Claims;
 
 using Application.Settings;
 
-using Domain.Entity;
+using Infrastructure.Users;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Application.Services.impl;
+namespace Infrastructure.Services;
 
-public class TokenService(IOptions<JwtSettings> config) : ITokenService
+public class TokenService(IOptions<JwtSettings> config)
 {
     private readonly JwtSettings _jwtSettings = config.Value;
-    private ITokenService _tokenServiceImplementation;
 
     public async Task<string> CreateToken(ApplicationUser user, UserManager<ApplicationUser> userManager)
     {

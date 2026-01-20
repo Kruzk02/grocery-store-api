@@ -17,13 +17,6 @@ public class UserController(
     ) : ControllerBase
 {
 
-    [HttpGet("me")]
-    public async Task<IActionResult> Me()
-    {
-        var result = await userService.GetUser(User);
-        return Ok(result);
-    }
-
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)

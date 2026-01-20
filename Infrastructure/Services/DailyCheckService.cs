@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Application.Services.impl;
+namespace Infrastructure.Services;
 
 public class DailyCheckService(ILogger<DailyCheckService> logger, IServiceScopeFactory scopeFactory) : BackgroundService
 {

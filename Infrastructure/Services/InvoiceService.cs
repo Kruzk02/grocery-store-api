@@ -1,4 +1,5 @@
 using Application.Dtos.Request;
+using Application.Services;
 
 using Domain.Entity;
 using Domain.Exception;
@@ -7,7 +8,7 @@ using Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Services.impl;
+namespace Infrastructure.Services;
 
 public class InvoiceService(ApplicationDbContext ctx) : IInvoiceService
 {

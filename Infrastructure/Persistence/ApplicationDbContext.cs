@@ -1,5 +1,7 @@
 using Domain.Entity;
 
+using Infrastructure.Users;
+
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

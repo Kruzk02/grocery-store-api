@@ -1,10 +1,11 @@
 using Application.Dtos.Request;
-using Application.Services.impl;
+using Application.Services;
 
 using Domain.Entity;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
+using Infrastructure.Services;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,7 +15,7 @@ namespace Tests.Services;
 [TestFixture]
 public class ProductServiceTest
 {
-    private ProductService _productService;
+    private IProductService _productService;
     private ApplicationDbContext _context;
 
     [SetUp]

@@ -1,4 +1,4 @@
-namespace Infrastructure.FileSystem;
+namespace Application.Common;
 
 public interface IImageStorage
 {

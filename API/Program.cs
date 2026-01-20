@@ -3,14 +3,15 @@ using System.Text;
 using API.Data;
 using API.Middleware;
 
+using Application.Common;
 using Application.Services;
 using Application.Services.impl;
 using Application.Settings;
 
-using Domain.Entity;
-
 using Infrastructure.FileSystem;
 using Infrastructure.Persistence;
+using Infrastructure.Services;
+using Infrastructure.Users;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +33,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();

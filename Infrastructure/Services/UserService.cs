@@ -2,8 +2,10 @@ using System.Security.Claims;
 
 using Application.Dtos.Request;
 
-using Domain.Entity;
 using Domain.Exception;
+
+using Infrastructure.Services;
+using Infrastructure.Users;
 
 using Microsoft.AspNetCore.Identity;
 
@@ -12,7 +14,7 @@ namespace Application.Services.impl;
 public class UserService(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    ITokenService tokenService
+    TokenService tokenService
     ) : IUserService
 {
     public async Task<string> CreateUser(RegisterDto dto)
@@ -73,12 +75,6 @@ public class UserService(
         }
 
         return "User updated successfully";
-    }
-
-    public async Task<ApplicationUser> GetUser(ClaimsPrincipal user)
-    {
-        var existingUser = await userManager.GetUserAsync(user);
-        return existingUser ?? throw new NotFoundException("User not found");
     }
 
     public async Task<bool> DeleteUser(string id)

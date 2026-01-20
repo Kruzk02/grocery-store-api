@@ -1,10 +1,11 @@
 using Application.Dtos.Request;
-using Application.Services.impl;
+using Application.Services;
 
 using Domain.Entity;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
+using Infrastructure.Services;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,7 +16,7 @@ namespace Tests.Services;
 public class OrderServiceTest
 {
 
-    private OrderService _orderService;
+    private IOrderService _orderService;
     private ApplicationDbContext _dbContext;
 
     [SetUp]

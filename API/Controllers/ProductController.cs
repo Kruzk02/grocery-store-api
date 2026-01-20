@@ -1,11 +1,10 @@
 using API.Dto;
 
+using Application.Common;
 using Application.Dtos.Request;
 using Application.Services;
 
 using Domain.Entity;
-
-using Infrastructure.FileSystem;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -111,8 +110,16 @@ public class ProductController(IProductService productService, IOrderItemService
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> Update(int id, [FromBody] ProductDto productDto)
+    public async Task<IActionResult> Update(int id, [FromForm] UpdatedProductDto updatedProductDto)
     {
+        string filename = "";
+        if (updatedProductDto.photo != null)
+        {
+            using var stream = updatedProductDto.photo.OpenReadStream();
+            filename = await imageStorage.Save(stream, Path.GetExtension(updatedProductDto.photo.FileName), updatedProductDto.photo.ContentType);
+        }
+
+        ProductDto productDto = new(updatedProductDto.Name, updatedProductDto.Description, updatedProductDto.Price, updatedProductDto.CategoryId, updatedProductDto.Quantity, filename);
         var result = await productService.Update(id, productDto);
         return Ok(result);
     }

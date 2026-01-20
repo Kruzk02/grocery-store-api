@@ -1,7 +1,6 @@
-using Domain.Entity;
+using Infrastructure.Users;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 

@@ -1,3 +1,5 @@
+using Application.Services;
+
 using Domain.Entity;
 
 using Infrastructure.Persistence;
@@ -5,7 +7,7 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Application.Services.impl;
+namespace Infrastructure.Services;
 
 /// <summary>
 /// Provides operations for retrieving categories.

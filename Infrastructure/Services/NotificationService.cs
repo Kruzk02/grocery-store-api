@@ -1,3 +1,5 @@
+using Application.Services;
+
 using Domain.Entity;
 using Domain.Exception;
 
@@ -5,7 +7,7 @@ using Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Services.impl;
+namespace Infrastructure.Services;
 
 /// <summary>
 /// Provides operations for Create, Retrieve, Delete and mark as read notification.

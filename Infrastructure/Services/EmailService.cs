@@ -3,7 +3,7 @@ using System.Net.Mail;
 
 using Microsoft.Extensions.Configuration;
 
-namespace Application.Services.impl;
+namespace Infrastructure.Services;
 
 public class EmailService(IConfiguration configuration)
 {

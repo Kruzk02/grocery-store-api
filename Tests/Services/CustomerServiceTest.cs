@@ -1,9 +1,10 @@
 using Application.Dtos.Request;
-using Application.Services.impl;
+using Application.Services;
 
 using Domain.Exception;
 
 using Infrastructure.Persistence;
+using Infrastructure.Services;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,7 +15,7 @@ namespace Tests.Services;
 public class CustomerServiceTest
 {
 
-    private CustomerService _customerService;
+    private ICustomerService _customerService;
     private ApplicationDbContext _dbContext;
 
     [SetUp]

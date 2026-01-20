@@ -1,10 +1,11 @@
 using Application.Dtos.Request;
-using Application.Services.impl;
+using Application.Services;
 
 using Domain.Entity;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
+using Infrastructure.Services;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,7 @@ namespace Tests.Services;
 [TestFixture]
 public class InvoiceServiceTest
 {
-    private InvoiceService _invoiceService;
+    private IInvoiceService _invoiceService;
     private ApplicationDbContext _db;
 
     [SetUp]

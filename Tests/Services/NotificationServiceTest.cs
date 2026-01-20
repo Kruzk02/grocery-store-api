@@ -1,9 +1,11 @@
-using Application.Services.impl;
+using Application.Services;
 
 using Domain.Entity;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
+using Infrastructure.Services;
+using Infrastructure.Users;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +14,7 @@ namespace Tests.Services;
 [TestFixture]
 public class NotificationServiceTest
 {
-    private NotificationService _notificationService;
+    private INotificationService _notificationService;
     private ApplicationDbContext _dbContext;
 
     [SetUp]
