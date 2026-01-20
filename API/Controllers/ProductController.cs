@@ -73,7 +73,7 @@ public class ProductController(IProductService productService, IOrderItemService
         {
             using var stream = createdProductDto.photo.OpenReadStream();
 
-            filename = await imageStorage.Save(stream, Path.GetExtension(createdProductDto.photo.FileName), createdProductDto.photo.ContentType);
+            filename = await imageStorage.Save(stream, Path.GetExtension(createdProductDto.photo.FileName));
         }
 
         ProductDto productDto = new(createdProductDto.Name, createdProductDto.Description, createdProductDto.Price, createdProductDto.CategoryId, createdProductDto.Quantity, filename);
@@ -89,6 +89,10 @@ public class ProductController(IProductService productService, IOrderItemService
         var path = imageStorage.GetImage(filename);
         if (!System.IO.File.Exists(path)) NotFound();
         var extension = Path.GetExtension(filename);
+
+        if (extension == ".jpg") {
+            extension = ".jpeg";
+        }
 
         return PhysicalFile(path, $"image/{extension.Replace(".", string.Empty)}");
     }
@@ -116,7 +120,7 @@ public class ProductController(IProductService productService, IOrderItemService
         if (updatedProductDto.photo != null)
         {
             using var stream = updatedProductDto.photo.OpenReadStream();
-            filename = await imageStorage.Save(stream, Path.GetExtension(updatedProductDto.photo.FileName), updatedProductDto.photo.ContentType);
+            filename = await imageStorage.Save(stream, Path.GetExtension(updatedProductDto.photo.FileName));
         }
 
         ProductDto productDto = new(updatedProductDto.Name, updatedProductDto.Description, updatedProductDto.Price, updatedProductDto.CategoryId, updatedProductDto.Quantity, filename);

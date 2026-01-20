@@ -1,3 +1,4 @@
+using Application.Common;
 using Application.Dtos.Request;
 using Application.Services;
 
@@ -18,7 +19,7 @@ namespace Infrastructure.Services;
 /// This class interacts with database to performs CRUD operations related to produts.
 /// </remarks>
 /// <param name="ctx">the <see cref="ApplicationDbContext"/> used to access the database.</param>
-public class ProductService(ApplicationDbContext ctx, IMemoryCache cache) : IProductService
+public class ProductService(ApplicationDbContext ctx, IImageStorage imageStorage, IMemoryCache cache) : IProductService
 {
     public async Task<(int total, List<Product> data)> SearchProducts(string? name, int skip, int take)
     {
@@ -95,6 +96,12 @@ public class ProductService(ApplicationDbContext ctx, IMemoryCache cache) : IPro
             product.Category = category;
         }
 
+        if (productDto.filename != null && product.imagePath != null)
+        {
+            await imageStorage.Delete(product.imagePath);
+            product.imagePath = productDto.filename;
+        }
+
         product.UpdatedAt = DateTime.UtcNow;
 
         await ctx.SaveChangesAsync();
@@ -134,7 +141,8 @@ public class ProductService(ApplicationDbContext ctx, IMemoryCache cache) : IPro
         cache.Remove($"product:{id}");
         ctx.Products.Remove(product);
         await ctx.SaveChangesAsync();
-
+        if (product.imagePath != null)
+            await imageStorage.Delete(product.imagePath);
         return true;
     }
 }
