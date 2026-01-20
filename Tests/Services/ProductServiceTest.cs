@@ -25,7 +25,7 @@ public class ProductServiceTest
     public void SetUp()
     {
         _context = GetInMemoryDbContext();
-        _imageService = new FileSystemImageStorage("");
+        _imageService = new FileSystemImageStorage("wwww");
         _productService = new ProductService(_context, _imageService, new MemoryCache(new MemoryCacheOptions()));
     }
 
