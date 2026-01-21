@@ -4,7 +4,7 @@ using Application.Services;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
-using Infrastructure.Services;
+using Infrastructure.Repository;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -22,7 +22,7 @@ public class CustomerServiceTest
     public void SetUp()
     {
         _dbContext = GetInMemoryDbContext();
-        _customerService = new CustomerService(_dbContext, new MemoryCache(new MemoryCacheOptions()));
+        _customerService = new CustomerService(new CustomerRepository(_dbContext), new MemoryCache(new MemoryCacheOptions()));
     }
 
     [TearDown]

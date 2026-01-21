@@ -1,30 +1,18 @@
 using Application.Dtos.Request;
-using Application.Services;
+using Application.Repository;
 
 using Domain.Entity;
 using Domain.Exception;
 
-using Infrastructure.Persistence;
-
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
-public class CustomerService(ApplicationDbContext ctx, IMemoryCache cache) : ICustomerService
+public class CustomerService(ICustomerRepository customerRepository, IMemoryCache cache) : ICustomerService
 {
     public async Task<(int total, List<Customer> data)> SearchCustomers(string? name, int skip, int take)
     {
-        var query = ctx.Customers.AsQueryable();
-        if (!string.IsNullOrEmpty(name))
-        {
-            query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{name.ToLower()}%"));
-        }
-
-        var total = await query.CountAsync();
-        var data = await query.Skip(skip).Take(take).ToListAsync();
-
-        return (total, data);
+        return await customerRepository.Search(name, skip, take);
     }
 
     public async Task<List<Customer>> FindAll()
@@ -34,7 +22,7 @@ public class CustomerService(ApplicationDbContext ctx, IMemoryCache cache) : ICu
             if (customers != null)
                 return customers;
 
-        customers = await ctx.Customers.ToListAsync();
+        customers = await customerRepository.FindAll();
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
@@ -63,15 +51,12 @@ public class CustomerService(ApplicationDbContext ctx, IMemoryCache cache) : ICu
             Address = customerDto.Address
         };
 
-        var result = await ctx.AddAsync(customer);
-        await ctx.SaveChangesAsync();
-
-        return result.Entity;
+        return await customerRepository.Add(customer);
     }
 
     public async Task<string> Update(int id, CustomerDto customerDto)
     {
-        var existingCustomer = await ctx.Customers.FindAsync(id);
+        var existingCustomer = await customerRepository.FindById(id);
         if (existingCustomer == null)
             throw new NotFoundException($"Customer with id: {id} not found");
 
@@ -84,8 +69,7 @@ public class CustomerService(ApplicationDbContext ctx, IMemoryCache cache) : ICu
         if (!string.IsNullOrEmpty(customerDto.Address) && customerDto.Address != existingCustomer.Address)
             existingCustomer.Address = customerDto.Address;
 
-        existingCustomer.UpdatedAt = DateTime.UtcNow;
-        await ctx.SaveChangesAsync();
+        await customerRepository.Update(existingCustomer);
 
         return "Customer updated successfully";
     }
@@ -98,7 +82,7 @@ public class CustomerService(ApplicationDbContext ctx, IMemoryCache cache) : ICu
             if (customer != null)
                 return customer;
 
-        customer = await ctx.Customers.FindAsync(id);
+        customer = await customerRepository.FindById(id);
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
@@ -114,7 +98,7 @@ public class CustomerService(ApplicationDbContext ctx, IMemoryCache cache) : ICu
             if (customer != null)
                 return customer;
 
-        customer = await ctx.Customers.Where(c => c.Email == email).FirstOrDefaultAsync();
+        customer = await customerRepository.FindByEmail(email);
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
@@ -131,7 +115,7 @@ public class CustomerService(ApplicationDbContext ctx, IMemoryCache cache) : ICu
             if (customer != null)
                 return customer;
 
-        customer = await ctx.Customers.Where(c => c.Name == name).FirstOrDefaultAsync();
+        customer = await customerRepository.FindByName(name);
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
@@ -147,7 +131,7 @@ public class CustomerService(ApplicationDbContext ctx, IMemoryCache cache) : ICu
             if (customer != null)
                 return customer;
 
-        customer = await ctx.Customers.Where(c => c.Phone == phoneNumber).FirstOrDefaultAsync();
+        customer = await customerRepository.FindByPhoneNumber(phoneNumber);
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
@@ -158,15 +142,14 @@ public class CustomerService(ApplicationDbContext ctx, IMemoryCache cache) : ICu
 
     public async Task<string> DeleteById(int id)
     {
-        var customer = await ctx.Customers.FindAsync(id);
+        var customer = await customerRepository.FindById(id);
         if (customer == null)
         {
             throw new NotFoundException($"Customer with id: {id} not found");
         }
 
         cache.Remove($"customer:{id}");
-        ctx.Customers.Remove(customer);
-        await ctx.SaveChangesAsync();
+        await customerRepository.Delete(customer);
 
         return "Customer deleted successfully";
     }
