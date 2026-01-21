@@ -1,5 +1,6 @@
 using Application.Common;
 using Application.Dtos.Request;
+using Application.Interface;
 using Application.Services;
 
 using Domain.Entity;
@@ -7,7 +8,7 @@ using Domain.Exception;
 
 using Infrastructure.FileSystem;
 using Infrastructure.Persistence;
-using Infrastructure.Services;
+using Infrastructure.Repository;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -26,7 +27,7 @@ public class ProductServiceTest
     {
         _context = GetInMemoryDbContext();
         _imageService = new FileSystemImageStorage("wwww");
-        _productService = new ProductService(_context, _imageService, new MemoryCache(new MemoryCacheOptions()));
+        _productService = new ProductService(new ProductRepository(_context), new CategoryRepository(_context), _imageService, new MemoryCache(new MemoryCacheOptions()));
     }
 
     [TearDown]

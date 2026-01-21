@@ -15,4 +15,9 @@ public class CategoryRepository(ApplicationDbContext ctx) : ICategoryRepository
     {
         return await ctx.Categories.ToListAsync();
     }
+
+    public async Task<Category?> FindById(int Id)
+    {
+        return await ctx.Categories.FindAsync(Id);
+    }
 }

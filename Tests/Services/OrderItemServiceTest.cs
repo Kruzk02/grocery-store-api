@@ -1,10 +1,12 @@
 using Application.Dtos.Request;
+using Application.Interface;
 using Application.Services;
 
 using Domain.Entity;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
+using Infrastructure.Repository;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -24,7 +26,7 @@ public class OrderItemServiceTest
     public void Setup()
     {
         _dbContext = GetInMemoryDbContext();
-        _orderItemService = new OrderItemService(_dbContext, new MemoryCache(new MemoryCacheOptions()));
+        _orderItemService = new OrderItemService(new OrderItemRepository(_dbContext), new OrderRepository(_dbContext), new ProductRepository(_dbContext), new MemoryCache(new MemoryCacheOptions()));
     }
 
     [TearDown]

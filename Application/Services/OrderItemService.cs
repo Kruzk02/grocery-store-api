@@ -9,7 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Application.Services;
 
-public class OrderItemService(IOrderItemRepository orderItemRepository, IOrderRepository orderRepository, IMemoryCache cache) : IOrderItemService
+public class OrderItemService(IOrderItemRepository orderItemRepository, IOrderRepository orderRepository, IProductRepository productRepository, IMemoryCache cache) : IOrderItemService
 {
     public async Task<OrderItem> Create(OrderItemDto orderItemDto)
     {
@@ -19,7 +19,7 @@ public class OrderItemService(IOrderItemRepository orderItemRepository, IOrderRe
             throw new NotFoundException($"Order with id {orderItemDto.OrderId} not found");
         }
 
-        var product = await ctx.Products.FindAsync(orderItemDto.ProductId);
+        var product = await productRepository.FindById(orderItemDto.ProductId);
         if (product == null)
         {
             throw new NotFoundException($"Product with id {orderItemDto.ProductId} not found");
@@ -59,7 +59,7 @@ public class OrderItemService(IOrderItemRepository orderItemRepository, IOrderRe
 
         if (orderItem.ProductId != orderItemDto.ProductId)
         {
-            var product = await ctx.Products.FindAsync(orderItemDto.ProductId);
+            var product = await productRepository.FindById(orderItemDto.ProductId);
             if (product == null)
             {
                 throw new NotFoundException($"Product with id {orderItemDto.ProductId} not found");
@@ -74,7 +74,7 @@ public class OrderItemService(IOrderItemRepository orderItemRepository, IOrderRe
 
         if (orderItem.Quantity != orderItemDto.Quantity && orderItemDto.Quantity >= 0)
         {
-            var product = await ctx.Products.FindAsync(orderItem.ProductId);
+            var product = await productRepository.FindById(orderItem.ProductId);
             if (product == null)
             {
                 throw new NotFoundException($"Product with id {orderItem.ProductId} not found");

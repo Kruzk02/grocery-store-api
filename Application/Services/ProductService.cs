@@ -1,16 +1,15 @@
 using Application.Common;
 using Application.Dtos.Request;
-using Application.Services;
+using Application.Interface;
+using Application.Repository;
 
 using Domain.Entity;
 using Domain.Exception;
 
-using Infrastructure.Persistence;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
 /// <summary>
 /// Provides operations for create, retrieve, update and delete product.
@@ -19,26 +18,17 @@ namespace Infrastructure.Services;
 /// This class interacts with database to performs CRUD operations related to produts.
 /// </remarks>
 /// <param name="ctx">the <see cref="ApplicationDbContext"/> used to access the database.</param>
-public class ProductService(ApplicationDbContext ctx, IImageStorage imageStorage, IMemoryCache cache) : IProductService
+public class ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, IImageStorage imageStorage, IMemoryCache cache) : IProductService
 {
     public async Task<(int total, List<Product> data)> SearchProducts(string? name, int skip, int take)
     {
-        var query = ctx.Products.AsQueryable();
-        if (!string.IsNullOrEmpty(name))
-        {
-            query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{name.ToLower()}%"));
-        }
-
-        var total = await query.CountAsync();
-        var data = await query.Skip(skip).Take(take).ToListAsync();
-
-        return (total, data);
+        return await productRepository.Search(name, skip, take);
     }
 
     ///  <inheritdoc/>
     public async Task<Product> Create(ProductDto productDto)
     {
-        var category = await ctx.Categories.FindAsync(productDto.CategoryId);
+        var category = await categoryRepository.FindById(productDto.CategoryId);
         if (category == null)
         {
             throw new NotFoundException($"Category with id {productDto.CategoryId} not found");
@@ -57,16 +47,13 @@ public class ProductService(ApplicationDbContext ctx, IImageStorage imageStorage
             UpdatedAt = DateTime.UtcNow
         };
 
-        var result = await ctx.Products.AddAsync(product);
-        await ctx.SaveChangesAsync();
-
-        return result.Entity;
+        return await productRepository.Add(product);
     }
 
     /// <inheritdoc/>
     public async Task<Product> Update(int id, ProductDto productDto)
     {
-        var product = await ctx.Products.FindAsync(id);
+        var product = await productRepository.FindById(id);
         if (product == null)
         {
             throw new NotFoundException($"Product with id {id} not found");
@@ -86,7 +73,7 @@ public class ProductService(ApplicationDbContext ctx, IImageStorage imageStorage
 
         if (productDto.CategoryId != product.CategoryId)
         {
-            var category = await ctx.Categories.FindAsync(productDto.CategoryId);
+            var category = await categoryRepository.FindById(productDto.CategoryId);
             if (category == null)
             {
                 throw new NotFoundException($"Category with id {productDto.CategoryId} not found");
@@ -104,7 +91,7 @@ public class ProductService(ApplicationDbContext ctx, IImageStorage imageStorage
 
         product.UpdatedAt = DateTime.UtcNow;
 
-        await ctx.SaveChangesAsync();
+        await productRepository.Update(product);
 
         return product;
     }
@@ -120,7 +107,7 @@ public class ProductService(ApplicationDbContext ctx, IImageStorage imageStorage
                 return product;
         }
 
-        product = await ctx.Products.FindAsync(id);
+        product = await productRepository.FindById(id);
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
@@ -132,15 +119,14 @@ public class ProductService(ApplicationDbContext ctx, IImageStorage imageStorage
     /// <inheritdoc/>
     public async Task<bool> DeleteById(int id)
     {
-        var product = await ctx.Products.FindAsync(id);
+        var product = await productRepository.FindById(id);
         if (product == null)
         {
             throw new NotFoundException($"Product with id {id} not found");
         }
 
         cache.Remove($"product:{id}");
-        ctx.Products.Remove(product);
-        await ctx.SaveChangesAsync();
+        await productRepository.Delete(product);
         if (product.imagePath != null)
             await imageStorage.Delete(product.imagePath);
         return true;
