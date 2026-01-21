@@ -1,13 +1,11 @@
-using Application.Services;
+using Application.Interface;
+using Application.Repository;
 
 using Domain.Entity;
 
-using Infrastructure.Persistence;
-
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
 /// <summary>
 /// Provides operations for retrieving categories.
@@ -16,7 +14,7 @@ namespace Infrastructure.Services;
 /// This class interacts with database to performs retrieve operations related to categories.
 /// </remarks>
 /// <param name="ctx">the <see cref="ApplicationDbContext"/> used to access the database.</param>
-public class CategoryService(ApplicationDbContext ctx, IMemoryCache cache) : ICategoryService
+public class CategoryService(ICategoryRepository categoryRepository, IMemoryCache cache) : ICategoryService
 {
     /// <inheritdoc />
     public async Task<List<Category>> FindAll()
@@ -26,7 +24,7 @@ public class CategoryService(ApplicationDbContext ctx, IMemoryCache cache) : ICa
             if (categories != null)
                 return categories;
 
-        categories = await ctx.Categories.ToListAsync();
+        categories = await categoryRepository.FindAll();
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));

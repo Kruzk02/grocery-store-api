@@ -1,7 +1,9 @@
+using Application.Services;
+
 using Domain.Entity;
 
 using Infrastructure.Persistence;
-using Infrastructure.Services;
+using Infrastructure.Repository;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -29,7 +31,7 @@ public class CategoryServiceTest
         foreach (var item in category) ctx.Categories.Add(item);
         await ctx.SaveChangesAsync();
 
-        var service = new CategoryService(ctx, new MemoryCache(new MemoryCacheOptions()));
+        var service = new CategoryService(new CategoryRepository(ctx), new MemoryCache(new MemoryCacheOptions()));
 
         var result = service.FindAll();
         using (Assert.EnterMultipleScope())
