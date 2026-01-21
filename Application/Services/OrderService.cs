@@ -1,21 +1,19 @@
 using Application.Dtos.Request;
-using Application.Services;
+using Application.Interface;
+using Application.Repository;
 
 using Domain.Entity;
 using Domain.Exception;
 
-using Infrastructure.Persistence;
-
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
-public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrderService
+public class OrderService(IOrderRepository orderRepository, ICustomerRepository customerRepository, IMemoryCache cache) : IOrderService
 {
     public async Task<Order> Create(OrderDto orderDto)
     {
-        var customer = await ctx.Customers.FindAsync(orderDto.CustomerId);
+        var customer = await customerRepository.FindById(orderDto.CustomerId);
         if (customer == null)
         {
             throw new NotFoundException($"Customer with id {orderDto.CustomerId} not found");
@@ -27,15 +25,12 @@ public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrder
             Customer = customer
         };
 
-        var result = await ctx.Orders.AddAsync(order);
-        await ctx.SaveChangesAsync();
-
-        return result.Entity;
+        return await orderRepository.Add(order);
     }
 
     public async Task<Order> Update(int id, OrderDto orderDto)
     {
-        var order = await ctx.Orders.FindAsync(id);
+        var order = await orderRepository.FindById(id);
         if (order == null)
         {
             throw new NotFoundException($"Order with id {id} not found");
@@ -43,7 +38,7 @@ public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrder
 
         if (orderDto.CustomerId != order.CustomerId && orderDto.CustomerId != 0)
         {
-            var customer = await ctx.Customers.FindAsync(orderDto.CustomerId);
+            var customer = await customerRepository.FindById(orderDto.CustomerId);
             if (customer == null)
             {
                 throw new NotFoundException($"Customer with id {orderDto.CustomerId} not found");
@@ -53,8 +48,7 @@ public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrder
             order.Customer = customer;
         }
 
-        await ctx.SaveChangesAsync();
-
+        await orderRepository.Update(order);
         return order;
     }
 
@@ -64,7 +58,7 @@ public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrder
         if (cache.TryGetValue(cacheKey, out Order? order))
             if (order != null)
                 return order;
-        order = await ctx.Orders.FindAsync(id);
+        order = await orderRepository.FindById(id);
         var cacheOptions = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
@@ -81,7 +75,7 @@ public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrder
             if (orders != null)
                 return orders;
 
-        orders = await ctx.Orders.Where(o => o.CustomerId == customerId).ToListAsync();
+        orders = await orderRepository.FindByCustomerId(customerId);
 
         var cacheOptions = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
@@ -93,15 +87,14 @@ public class OrderService(ApplicationDbContext ctx, IMemoryCache cache) : IOrder
 
     public async Task<bool> Delete(int id)
     {
-        var order = await ctx.Orders.FindAsync(id);
+        var order = await orderRepository.FindById(id);
         if (order == null)
         {
             throw new NotFoundException($"Order with id {id} not found");
         }
 
         cache.Remove($"order:{id}");
-        ctx.Orders.Remove(order);
-        await ctx.SaveChangesAsync();
+        await orderRepository.Delete(order);
         return true;
     }
 }
