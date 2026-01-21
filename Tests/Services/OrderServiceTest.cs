@@ -1,11 +1,12 @@
 using Application.Dtos.Request;
+using Application.Interface;
 using Application.Services;
 
 using Domain.Entity;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
-using Infrastructure.Services;
+using Infrastructure.Repository;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -23,7 +24,7 @@ public class OrderServiceTest
     public void SetUp()
     {
         _dbContext = GetInMemoryDbContext();
-        _orderService = new OrderService(_dbContext, new MemoryCache(new MemoryCacheOptions()));
+        _orderService = new OrderService(new OrderRepository(_dbContext), new CustomerRepository(_dbContext), new MemoryCache(new MemoryCacheOptions()));
     }
 
     [TearDown]
@@ -94,7 +95,7 @@ public class OrderServiceTest
     [TestCaseSource(nameof(CreateCustomer))]
     public async Task FindById(Customer customer)
     {
-        var orderItemService = new OrderItemService(_dbContext, new MemoryCache(new MemoryCacheOptions()));
+        var orderItemService = new OrderItemService(new OrderItemRepository(_dbContext), new OrderRepository(_dbContext), new MemoryCache(new MemoryCacheOptions()));
 
         var order = new Order
         {

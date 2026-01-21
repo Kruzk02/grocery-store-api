@@ -1,21 +1,19 @@
 using Application.Dtos.Request;
-using Application.Services;
+using Application.Interface;
+using Application.Repository;
 
 using Domain.Entity;
 using Domain.Exception;
 
-using Infrastructure.Persistence;
-
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
-public class OrderItemService(ApplicationDbContext ctx, IMemoryCache cache) : IOrderItemService
+public class OrderItemService(IOrderItemRepository orderItemRepository, IOrderRepository orderRepository, IMemoryCache cache) : IOrderItemService
 {
     public async Task<OrderItem> Create(OrderItemDto orderItemDto)
     {
-        var order = await ctx.Orders.FindAsync(orderItemDto.OrderId);
+        var order = await orderRepository.FindById(orderItemDto.OrderId);
         if (order == null)
         {
             throw new NotFoundException($"Order with id {orderItemDto.OrderId} not found");
@@ -48,16 +46,12 @@ public class OrderItemService(ApplicationDbContext ctx, IMemoryCache cache) : IO
             Product = product,
             Quantity = orderItemDto.Quantity,
         };
-
-        var result = await ctx.OrderItems.AddAsync(orderItem);
-        await ctx.SaveChangesAsync();
-
-        return result.Entity;
+        return await orderItemRepository.Add(orderItem);
     }
 
     public async Task<OrderItem> Update(int id, OrderItemDto orderItemDto)
     {
-        var orderItem = await ctx.OrderItems.FindAsync(id);
+        var orderItem = await orderItemRepository.FindById(id);
         if (orderItem == null)
         {
             throw new NotFoundException($"Order item with id {id} not found");
@@ -99,7 +93,7 @@ public class OrderItemService(ApplicationDbContext ctx, IMemoryCache cache) : IO
             product.Quantity -= orderItem.Quantity;
         }
 
-        await ctx.SaveChangesAsync();
+        await orderItemRepository.Update(orderItem);
 
         return orderItem;
     }
@@ -111,7 +105,7 @@ public class OrderItemService(ApplicationDbContext ctx, IMemoryCache cache) : IO
             if (orderItem != null)
                 return orderItem;
 
-        orderItem = await ctx.OrderItems.FindAsync(id);
+        orderItem = await orderItemRepository.FindById(id);
 
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
@@ -129,12 +123,7 @@ public class OrderItemService(ApplicationDbContext ctx, IMemoryCache cache) : IO
             if (orderItems != null)
                 return orderItems;
 
-        orderItems = await ctx.OrderItems
-            .Where(oi => oi.OrderId == orderId)
-            .Include(oi => oi.Order)
-                .ThenInclude(o => o.Items)
-            .Include(oi => oi.Product)
-            .ToListAsync();
+        orderItems = await orderItemRepository.FindByOrderId(orderId);
 
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
@@ -151,10 +140,7 @@ public class OrderItemService(ApplicationDbContext ctx, IMemoryCache cache) : IO
             if (orderItems != null)
                 return orderItems;
 
-        orderItems = await ctx.OrderItems
-            .Where(oi => oi.ProductId == productId)
-            .Include(oi => oi.Product)
-            .ToListAsync();
+        orderItems = await orderItemRepository.FindByProductId(productId);
 
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
@@ -166,7 +152,7 @@ public class OrderItemService(ApplicationDbContext ctx, IMemoryCache cache) : IO
 
     public async Task<bool> Delete(int id)
     {
-        var orderItem = await ctx.OrderItems.FindAsync(id);
+        var orderItem = await orderItemRepository.FindById(id);
         if (orderItem == null)
         {
             throw new NotFoundException($"Order item with id: {id} not found");
@@ -174,8 +160,7 @@ public class OrderItemService(ApplicationDbContext ctx, IMemoryCache cache) : IO
 
         cache.Remove($"orderItem:{id}");
 
-        ctx.OrderItems.Remove(orderItem);
-        await ctx.SaveChangesAsync();
+        await orderItemRepository.Delete(orderItem);
         return true;
     }
 }

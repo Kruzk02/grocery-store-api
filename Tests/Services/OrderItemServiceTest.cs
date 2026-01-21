@@ -5,7 +5,6 @@ using Domain.Entity;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
-using Infrastructure.Services;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
