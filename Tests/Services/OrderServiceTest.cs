@@ -95,7 +95,7 @@ public class OrderServiceTest
     [TestCaseSource(nameof(CreateCustomer))]
     public async Task FindById(Customer customer)
     {
-        var orderItemService = new OrderItemService(new OrderItemRepository(_dbContext), new OrderRepository(_dbContext), new MemoryCache(new MemoryCacheOptions()));
+        var orderItemService = new OrderItemService(new OrderItemRepository(_dbContext), new OrderRepository(_dbContext), new ProductRepository(_dbContext), new MemoryCache(new MemoryCacheOptions()));
 
         var order = new Order
         {
