@@ -1,11 +1,12 @@
 using Application.Dtos.Request;
 using Application.Services;
+using Application.Interface;
 
 using Domain.Entity;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
-using Infrastructure.Services;
+using Infrastructure.Repository;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -22,7 +23,7 @@ public class InventoryServiceTest
     public void Setup()
     {
         _dbContext = GetInMemoryDbContext();
-        _inventoryService = new InventoryService(_dbContext, new MemoryCache(new MemoryCacheOptions()));
+        _inventoryService = new InventoryService(new InventoryRepository(_dbContext), new ProductRepository(_dbContext), new MemoryCache(new MemoryCacheOptions()));
     }
 
     [TearDown]

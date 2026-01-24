@@ -1,15 +1,13 @@
 using Application.Dtos.Request;
-using Application.Services;
+using Application.Interface;
+using Application.Repository;
 
 using Domain.Entity;
 using Domain.Exception;
 
-using Infrastructure.Persistence;
-
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
 /// <summary>
 /// Provides operations for create, retrieve, update and delete inventory.
@@ -18,7 +16,7 @@ namespace Infrastructure.Services;
 /// This class interacts with database to performs CRUD operations relate to inventory.
 /// </remarks>
 /// <param name="ctx">The <see cref="ApplicationDbContext"/> used to access the database</param>
-public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : IInventoryService
+public class InventoryService(IInventoryRepository inventoryRepository, IProductRepository productRepository, IMemoryCache cache) : IInventoryService
 {
     /// <inheritdoc />
     public async Task<List<Inventory>> FindAll()
@@ -28,7 +26,7 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
             if (inventories != null)
                 return inventories;
 
-        inventories = await ctx.Inventories.ToListAsync();
+        inventories = await inventoryRepository.FindAll();
 
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
@@ -42,7 +40,7 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
     /// <inheritdoc />
     public async Task<Inventory> Create(InventoryDto inventoryDto)
     {
-        var product = await ctx.Products.FindAsync(inventoryDto.ProductId);
+        var product = await productRepository.FindById(inventoryDto.ProductId);
         if (product == null)
         {
             throw new NotFoundException($"Product with id: {inventoryDto.ProductId} not found");
@@ -56,16 +54,13 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
             UpdatedAt = DateTime.UtcNow
         };
 
-        var result = await ctx.Inventories.AddAsync(inventory);
-        await ctx.SaveChangesAsync();
-
-        return result.Entity;
+        return await inventoryRepository.Add(inventory);
     }
 
     /// <inheritdoc />
     public async Task<Inventory> Update(int id, InventoryDto inventoryDto)
     {
-        var inventory = await ctx.Inventories.FindAsync(id);
+        var inventory = await inventoryRepository.FindById(id);
         if (inventory == null)
         {
             throw new NotFoundException($"Inventory with id: {id} not found");
@@ -78,7 +73,7 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
 
         if (inventoryDto.ProductId != inventory.ProductId)
         {
-            var product = await ctx.Products.FindAsync(inventoryDto.ProductId);
+            var product = await productRepository.FindById(inventoryDto.ProductId);
             if (product == null)
             {
                 throw new NotFoundException($"Product with id: {inventoryDto.ProductId} not found");
@@ -89,8 +84,8 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
         }
 
         inventory.UpdatedAt = DateTime.UtcNow;
-        await ctx.SaveChangesAsync();
 
+        await inventoryRepository.Update(inventory);
         return inventory;
     }
 
@@ -102,7 +97,7 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
             if (inventory != null)
                 return inventory;
 
-        inventory = await ctx.Inventories.FindAsync(id);
+        inventory = await inventoryRepository.FindById(id);
 
         var cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
@@ -116,16 +111,14 @@ public class InventoryService(ApplicationDbContext ctx, IMemoryCache cache) : II
     /// <inheritdoc />
     public async Task<string> Delete(int id)
     {
-        var inventory = await ctx.Inventories.FindAsync(id);
+        var inventory = await inventoryRepository.FindById(id);
         if (inventory == null)
         {
             throw new NotFoundException($"Inventory with id: {id} not found");
         }
 
         cache.Remove($"inventory:{id}");
-        ctx.Inventories.Remove(inventory);
-        await ctx.SaveChangesAsync();
-
+        await inventoryRepository.Delete(inventory);
         return "Inventory deleted successfully";
     }
 }
