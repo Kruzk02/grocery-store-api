@@ -11,7 +11,6 @@ using Application.Settings;
 
 using Infrastructure.FileSystem;
 using Infrastructure.Persistence;
-using Infrastructure.Services;
 using Infrastructure.Users;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
