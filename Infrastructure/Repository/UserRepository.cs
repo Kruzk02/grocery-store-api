@@ -1,3 +1,4 @@
+using System.Security.Claims;
 
 using Application.Repository;
 
@@ -29,6 +30,18 @@ public class UserRepository(UserManager<ApplicationUser> userManager, SignInMana
         return roleResult.Succeeded ? user : throw new Exception($"User created, but role assigment failed: {result.Errors.Select(e => e.Description).FirstOrDefault()}");
     }
 
+    public async Task<User> GetUser(ClaimsPrincipal user)
+    {
+        var appUser = await userManager.GetUserAsync(user);
+        return new User
+        {
+            Id = appUser!.Id,
+            Username = appUser.UserName!,
+            Email = appUser.Email!,
+            Password = appUser.PasswordHash!
+        };
+    }
+
     public async Task<User> FindById(string id)
     {
         var appUser = await userManager.FindByIdAsync(id);
@@ -53,7 +66,7 @@ public class UserRepository(UserManager<ApplicationUser> userManager, SignInMana
         };
     }
 
-    public async Task<User> FindBuEmail(string email)
+    public async Task<User> FindByEmail(string email)
     {
         var appUser = await userManager.FindByEmailAsync(email);
         return new User
@@ -63,6 +76,12 @@ public class UserRepository(UserManager<ApplicationUser> userManager, SignInMana
             Email = appUser.Email!,
             Password = appUser.PasswordHash!
         };
+    }
+
+    public async Task<IList<string>> GetRoles(User user)
+    {
+        var appUser = ConvertUserToApplicationUser(user);
+        return await userManager.GetRolesAsync(appUser);
     }
 
     public async Task<bool> CheckPasswordSignIn(User user, string password)
@@ -79,7 +98,7 @@ public class UserRepository(UserManager<ApplicationUser> userManager, SignInMana
         return result.Succeeded;
     }
 
-    public async Task<bool> UpdateUser(User user, string username)
+    public async Task<bool> UpdateUsername(User user, string username)
     {
         var appUser = ConvertUserToApplicationUser(user);
         var result = await userManager.SetUserNameAsync(appUser, username);
