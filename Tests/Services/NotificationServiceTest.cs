@@ -1,10 +1,11 @@
+using Application.Interface;
 using Application.Services;
 
 using Domain.Entity;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
-using Infrastructure.Services;
+using Infrastructure.Repository;
 using Infrastructure.Users;
 
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ public class NotificationServiceTest
     public void Setup()
     {
         _dbContext = GetInMemoryDbContext();
-        _notificationService = new NotificationService(_dbContext);
+        _notificationService = new NotificationService(new NotificationRepository(_dbContext));
     }
 
     [TearDown]

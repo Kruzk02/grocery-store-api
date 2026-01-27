@@ -118,7 +118,8 @@ public class UserRepository(ApplicationDbContext ctx, UserManager<ApplicationUse
         return result.Succeeded;
     }
 
-    private static User map(ApplicationUser user) => new() {
+    private static User map(ApplicationUser user) => new()
+    {
         Id = user.Id,
         Username = user.UserName!,
         Email = user.Email!

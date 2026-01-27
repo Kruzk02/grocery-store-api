@@ -4,7 +4,7 @@ using Application.Dtos.Request;
 
 using Domain.Entity;
 
-namespace Application.Services;
+namespace Application.Interface;
 
 public interface IUserService
 {

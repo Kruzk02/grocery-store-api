@@ -2,7 +2,7 @@ using System.Security.Claims;
 
 using Application.Dtos.Request;
 using Application.Dtos.Response;
-using Application.Services;
+using Application.Interface;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +22,7 @@ public class UserController(
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         var result = await userService.CreateUser(dto);
-        return Ok(new UserResponse(result));
+        return Ok(new UserResponse("Success create user"));
     }
 
     [AllowAnonymous]
