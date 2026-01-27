@@ -35,45 +35,25 @@ public class UserRepository(ApplicationDbContext ctx, UserManager<ApplicationUse
     public async Task<User> GetUser(ClaimsPrincipal user)
     {
         var appUser = await userManager.GetUserAsync(user);
-        return new User
-        {
-            Id = appUser!.Id,
-            Username = appUser.UserName!,
-            Email = appUser.Email!,
-        };
+        return map(appUser!);
     }
 
     public async Task<User> FindById(string id)
     {
         var appUser = await userManager.FindByIdAsync(id);
-        return new User
-        {
-            Id = appUser!.Id,
-            Username = appUser.UserName!,
-            Email = appUser.Email!,
-        };
+        return map(appUser!);
     }
 
     public async Task<User> FindByUsername(string username)
     {
         var appUser = await userManager.FindByNameAsync(username);
-        return new User
-        {
-            Id = appUser!.Id,
-            Username = appUser.UserName!,
-            Email = appUser.Email!,
-        };
+        return map(appUser!);
     }
 
     public async Task<User> FindByEmail(string email)
     {
         var appUser = await userManager.FindByEmailAsync(email);
-        return new User
-        {
-            Id = appUser!.Id,
-            Username = appUser.UserName!,
-            Email = appUser.Email!,
-        };
+        return map(appUser!);
     }
 
     public async Task<IList<string>> GetRoles(User user)
@@ -137,4 +117,10 @@ public class UserRepository(ApplicationDbContext ctx, UserManager<ApplicationUse
         var result = await userManager.DeleteAsync(appUser!);
         return result.Succeeded;
     }
+
+    private static User map(ApplicationUser user) => new() {
+        Id = user.Id,
+        Username = user.UserName!,
+        Email = user.Email!
+    };
 }
