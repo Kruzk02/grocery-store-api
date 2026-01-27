@@ -19,10 +19,9 @@ public class UserService(
         {
             Username = dto.Username,
             Email = dto.Email,
-            Password = dto.Password
         };
 
-        var result = await userRepository.Add(user);
+        var result = await userRepository.Add(user, dto.Password);
         return result;
     }
 

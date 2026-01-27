@@ -4,15 +4,17 @@ using Application.Repository;
 
 using Domain.Entity;
 
+using Infrastructure.Persistence;
 using Infrastructure.Users;
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository;
 
-public class UserRepository(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) : IUserRepository
+public class UserRepository(ApplicationDbContext ctx, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) : IUserRepository
 {
-    public async Task<User> Add(User user)
+    public async Task<User> Add(User user, string password)
     {
         var appUser = new ApplicationUser
         {
@@ -20,7 +22,7 @@ public class UserRepository(UserManager<ApplicationUser> userManager, SignInMana
             Email = user.Email
         };
 
-        var result = await userManager.CreateAsync(appUser, user.Password);
+        var result = await userManager.CreateAsync(appUser, password);
 
         if (!result.Succeeded) throw new Exception($"User creation failed: {result.Errors.Select(e => e.Description).FirstOrDefault()}");
         user.Id = appUser.Id;
@@ -38,7 +40,6 @@ public class UserRepository(UserManager<ApplicationUser> userManager, SignInMana
             Id = appUser!.Id,
             Username = appUser.UserName!,
             Email = appUser.Email!,
-            Password = appUser.PasswordHash!
         };
     }
 
@@ -50,7 +51,6 @@ public class UserRepository(UserManager<ApplicationUser> userManager, SignInMana
             Id = appUser!.Id,
             Username = appUser.UserName!,
             Email = appUser.Email!,
-            Password = appUser.PasswordHash!
         };
     }
 
@@ -62,7 +62,6 @@ public class UserRepository(UserManager<ApplicationUser> userManager, SignInMana
             Id = appUser!.Id,
             Username = appUser.UserName!,
             Email = appUser.Email!,
-            Password = appUser.PasswordHash!
         };
     }
 
@@ -74,45 +73,59 @@ public class UserRepository(UserManager<ApplicationUser> userManager, SignInMana
             Id = appUser!.Id,
             Username = appUser.UserName!,
             Email = appUser.Email!,
-            Password = appUser.PasswordHash!
         };
     }
 
     public async Task<IList<string>> GetRoles(User user)
     {
-        var appUser = ConvertUserToApplicationUser(user);
-        return await userManager.GetRolesAsync(appUser);
+        var appUser = await userManager.FindByIdAsync(user.Id);
+        return await userManager.GetRolesAsync(appUser!);
+    }
+
+    public async Task<List<User>> GetUserByRole(string role, CancellationToken stoppingToken)
+    {
+        return await (from user in ctx.Users
+                      join userRole in ctx.UserRoles on user.Id equals userRole.UserId
+                      join roles in ctx.Roles on userRole.RoleId equals roles.Id
+                      where roles.Name == role
+                      select new User
+                      {
+                          Id = user.Id,
+                          Username = user.UserName!,
+                          Email = user.Email!,
+                      })
+            .ToListAsync(stoppingToken);
     }
 
     public async Task<bool> CheckPasswordSignIn(User user, string password)
     {
-        var appUser = ConvertUserToApplicationUser(user);
-        var result = await signInManager.CheckPasswordSignInAsync(appUser, password, false);
+        var appUser = await userManager.FindByIdAsync(user.Id);
+        var result = await signInManager.CheckPasswordSignInAsync(appUser!, password, false);
         return result.Succeeded;
     }
 
     public async Task<bool> UpdateEmail(User user, string email)
     {
-        var appUser = ConvertUserToApplicationUser(user);
-        var result = await userManager.SetEmailAsync(appUser, email);
+        var appUser = await userManager.FindByIdAsync(user.Id);
+        var result = await userManager.SetEmailAsync(appUser!, email);
         return result.Succeeded;
     }
 
     public async Task<bool> UpdateUsername(User user, string username)
     {
-        var appUser = ConvertUserToApplicationUser(user);
-        var result = await userManager.SetUserNameAsync(appUser, username);
+        var appUser = await userManager.FindByIdAsync(user.Id);
+        var result = await userManager.SetUserNameAsync(appUser!, username);
         return result.Succeeded;
     }
 
     public async Task<bool> UpdatePassword(User user, string password)
     {
-        var appUser = ConvertUserToApplicationUser(user);
+        var appUser = await userManager.FindByIdAsync(user.Id);
 
-        var removePassword = await userManager.RemovePasswordAsync(appUser);
+        var removePassword = await userManager.RemovePasswordAsync(appUser!);
         if (!removePassword.Succeeded) throw new Exception($"Failed to remove password: {removePassword.Errors.Select(e => e.Description).FirstOrDefault()}");
 
-        var addPassword = await userManager.AddPasswordAsync(appUser, password);
+        var addPassword = await userManager.AddPasswordAsync(appUser!, password);
         if (!addPassword.Succeeded) throw new Exception($"Failed to added password: {addPassword.Errors.Select(e => e.Description).FirstOrDefault()}");
 
         return true;
@@ -120,19 +133,8 @@ public class UserRepository(UserManager<ApplicationUser> userManager, SignInMana
 
     public async Task<bool> Delete(User user)
     {
-        var appUser = ConvertUserToApplicationUser(user);
-        var result = await userManager.DeleteAsync(appUser);
+        var appUser = await userManager.FindByIdAsync(user.Id);
+        var result = await userManager.DeleteAsync(appUser!);
         return result.Succeeded;
-    }
-
-    private ApplicationUser ConvertUserToApplicationUser(User user)
-    {
-        return new ApplicationUser
-        {
-            Id = user.Id!,
-            UserName = user.Username,
-            Email = user.Email,
-            PasswordHash = user.Password
-        };
     }
 }
