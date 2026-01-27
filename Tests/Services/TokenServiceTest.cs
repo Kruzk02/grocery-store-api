@@ -28,7 +28,7 @@ public class TokenServiceTest
 
         var tokenService = new TokenService(options);
 
-        var token = await tokenService.CreateToken(user, null);
+        var token = await tokenService.CreateToken(user, new[] {"user"});
 
         Assert.That(string.IsNullOrWhiteSpace(token), Is.False);
 

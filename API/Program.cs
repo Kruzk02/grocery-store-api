@@ -6,7 +6,6 @@ using API.Middleware;
 using Application.Common;
 using Application.Interface;
 using Application.Services;
-using Application.Services.impl;
 using Application.Settings;
 
 using Infrastructure.FileSystem;
