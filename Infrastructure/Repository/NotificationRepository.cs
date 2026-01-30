@@ -17,6 +17,12 @@ public class NotificationRepository(ApplicationDbContext ctx) : INotificationRep
         return result.Entity;
     }
 
+    public async Task Add(Notification notification, CancellationToken stoppingToken)
+    {
+        var result = await ctx.Notifications.AddAsync(notification);
+        await ctx.SaveChangesAsync(stoppingToken);
+    }
+
     public async Task<List<Notification>> FindByUserId(string userId)
     {
         return await ctx.Notifications

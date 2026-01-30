@@ -34,7 +34,8 @@ public class InventoryRepository(ApplicationDbContext ctx) : IInventoryRepositor
         return await ctx.Inventories.FindAsync(Id);
     }
 
-    public async Task<Inventory?> FindLessThanTen(CancellationToken stoppingToken) {
+    public async Task<Inventory?> FindLessThanTenQuantity(CancellationToken stoppingToken)
+    {
         return await ctx.Inventories.Where(i => i.Quantity <= 10).FirstOrDefaultAsync(stoppingToken);
     }
 

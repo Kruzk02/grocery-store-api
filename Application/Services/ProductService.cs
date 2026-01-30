@@ -6,7 +6,6 @@ using Application.Repository;
 using Domain.Entity;
 using Domain.Exception;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Application.Services;
