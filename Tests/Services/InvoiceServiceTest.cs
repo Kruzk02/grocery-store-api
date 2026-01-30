@@ -1,11 +1,12 @@
 using Application.Dtos.Request;
+using Application.Interface;
 using Application.Services;
 
 using Domain.Entity;
 using Domain.Exception;
 
 using Infrastructure.Persistence;
-using Infrastructure.Services;
+using Infrastructure.Repository;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,7 @@ public class InvoiceServiceTest
     public void Setup()
     {
         _db = GetInMemoryDbContext();
-        _invoiceService = new InvoiceService(_db);
+        _invoiceService = new InvoiceService(new InvoiceRepository(_db), new OrderRepository(_db));
     }
 
     [TearDown]

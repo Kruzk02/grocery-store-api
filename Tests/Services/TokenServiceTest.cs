@@ -50,7 +50,6 @@ public class TokenServiceTest
             Id = "123",
             Username = "testuser",
             Email = "test@example.com",
-            Password = "123"
         };
 
         yield return new User
@@ -58,7 +57,6 @@ public class TokenServiceTest
             Id = "456",
             Username = "testuser123",
             Email = "test@example.com",
-            Password = "456",
         };
 
         yield return new User
@@ -66,7 +64,6 @@ public class TokenServiceTest
             Id = "789",
             Username = "testuser456",
             Email = "test@example.com",
-            Password = "789"
         };
     }
 }
