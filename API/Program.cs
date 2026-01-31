@@ -5,11 +5,13 @@ using API.Middleware;
 
 using Application.Common;
 using Application.Interface;
+using Application.Repository;
 using Application.Services;
 using Application.Settings;
 
 using Infrastructure.FileSystem;
 using Infrastructure.Persistence;
+using Infrastructure.Repository;
 using Infrastructure.Users;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -43,6 +45,16 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
 builder.Services.AddSingleton<IImageStorage>(new FileSystemImageStorage(Path.Combine(builder.Environment.ContentRootPath, "uploads/images")));
 
