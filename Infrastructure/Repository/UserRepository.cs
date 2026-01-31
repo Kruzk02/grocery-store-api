@@ -38,22 +38,25 @@ public class UserRepository(ApplicationDbContext ctx, UserManager<ApplicationUse
         return map(appUser!);
     }
 
-    public async Task<User> FindById(string id)
+    public async Task<User?> FindById(string id)
     {
         var appUser = await userManager.FindByIdAsync(id);
-        return map(appUser!);
+        if (appUser == null) return null;
+        return map(appUser);
     }
 
-    public async Task<User> FindByUsername(string username)
+    public async Task<User?> FindByUsername(string username)
     {
         var appUser = await userManager.FindByNameAsync(username);
-        return map(appUser!);
+        if (appUser == null) return null;
+        return map(appUser);
     }
 
-    public async Task<User> FindByEmail(string email)
+    public async Task<User?> FindByEmail(string email)
     {
         var appUser = await userManager.FindByEmailAsync(email);
-        return map(appUser!);
+        if (appUser == null) return null;
+        return map(appUser);
     }
 
     public async Task<IList<string>> GetRoles(User user)
@@ -118,7 +121,7 @@ public class UserRepository(ApplicationDbContext ctx, UserManager<ApplicationUse
         return result.Succeeded;
     }
 
-    private static User map(ApplicationUser user) => new()
+    private static User map(ApplicationUser user) => new User
     {
         Id = user.Id,
         Username = user.UserName!,
