@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace Domain.Entity;
 
@@ -10,8 +9,8 @@ public class OrderItem
     public int Id { get; init; }
     [Required]
     public int OrderId { get; init; }
-    [ForeignKey(nameof(OrderId)), JsonIgnore]
-    public required Order Order { get; init; }
+    [ForeignKey(nameof(OrderId))]
+    public Order? Order { get; init; }
 
     [Required]
     public int ProductId { get; set; }
