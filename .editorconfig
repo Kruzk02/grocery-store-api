@@ -74,6 +74,7 @@ dotnet_diagnostic.IDE0005.severity = warning   # Remove unused usings
 dotnet_diagnostic.IDE0060.severity = warning   # Remove unused parameters
 dotnet_diagnostic.IDE0058.severity = suggestion # Expression value is never used
 dotnet_diagnostic.IDE0044.severity = suggestion # Make field readonly
+dotnet_diagnostic.IDE0160.severity = none # Convert to block scoped namespace
 
 # ----- .NET analyzers (Rider enables many by default) -----
 dotnet_analyzer_diagnostic.severity = suggestion
