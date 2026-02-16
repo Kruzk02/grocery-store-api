@@ -1,26 +1,21 @@
 using System.Text;
-
 using API.Data;
 using API.Middleware;
-
 using Application.Common;
 using Application.Interface;
 using Application.Repository;
 using Application.Services;
 using Application.Settings;
-
 using Infrastructure.FileSystem;
 using Infrastructure.Persistence;
 using Infrastructure.Repository;
 using Infrastructure.Users;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
 using QuestPDF;
 using QuestPDF.Infrastructure;
 
@@ -32,7 +27,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -56,17 +52,21 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
-builder.Services.AddSingleton<IImageStorage>(new FileSystemImageStorage(Path.Combine(builder.Environment.ContentRootPath, "uploads/images")));
+builder.Services.AddSingleton<IImageStorage>(
+    new FileSystemImageStorage(Path.Combine(builder.Environment.ContentRootPath, "uploads/images"))
+);
 
 builder.Services.AddHostedService<DailyCheckService>();
 
-builder.Services.AddIdentityCore<ApplicationUser>()
+builder
+    .Services.AddIdentityCore<ApplicationUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder
+    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -80,22 +80,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["JwtSettings:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!)
-            )
+            ),
         };
     });
 
-builder.Services.Configure<JwtSettings>(
-    builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("Admin"))
-    .SetFallbackPolicy(new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build());
+builder
+    .Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
+    .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -106,10 +104,12 @@ app.UseStaticFiles();
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+app.UseForwardedHeaders(
+    new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    }
+);
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -1,7 +1,5 @@
 using Application.Interface;
-
 using Domain.Entity;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +12,7 @@ namespace API.Controllers;
 /// This controller provided endpoints to retrieve categories.
 /// </remarks>
 /// <param name="service"></param>
-[ApiController, Route("[controller]"), Authorize]
+[ApiController, Route("[controller]"), AllowAnonymous]
 public class CategoryController(ICategoryService service) : ControllerBase
 {
     /// <summary>
