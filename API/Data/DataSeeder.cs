@@ -8,16 +8,20 @@ public class DataSeeder
 {
     public static async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
     {
-        var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<
+            UserManager<ApplicationUser>
+        >();
+        RoleManager<IdentityRole> roleManager = serviceProvider.GetRequiredService<
+            RoleManager<IdentityRole>
+        >();
 
-        string[] roleNames = ["Admin", "User"];
+        string[] roleNames = ["Admin", "Manager", "Employee"];
 
         foreach (var role in roleNames)
         {
             if (!await roleManager.RoleExistsAsync(role))
             {
-                await roleManager.CreateAsync(new IdentityRole(role));
+                _ = await roleManager.CreateAsync(new IdentityRole(role));
             }
         }
 
@@ -25,19 +29,15 @@ public class DataSeeder
         const string adminUsername = "adminUsername";
         const string adminPassword = "Admin@123";
 
-        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+        ApplicationUser? adminUser = await userManager.FindByEmailAsync(adminEmail);
         if (adminUser == null)
         {
-            adminUser = new ApplicationUser
-            {
-                UserName = adminUsername,
-                Email = adminEmail,
-            };
+            adminUser = new ApplicationUser { UserName = adminUsername, Email = adminEmail };
 
-            var result = await userManager.CreateAsync(adminUser, adminPassword);
+            IdentityResult result = await userManager.CreateAsync(adminUser, adminPassword);
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(adminUser, "Admin");
+                _ = await userManager.AddToRoleAsync(adminUser, "Admin");
             }
         }
     }

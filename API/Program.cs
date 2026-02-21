@@ -88,8 +88,11 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 builder
     .Services.AddAuthorizationBuilder()
-    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
+    .AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"))
+    .AddPolicy("RequireManagerOrAbove", policy => policy.RequireRole("Admin", "Manager"))
+    .AddPolicy("RequireUserOrAbove", policy => policy.RequireRole("Admin", "Manager", "User"))
     .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
