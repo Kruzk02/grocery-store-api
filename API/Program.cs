@@ -1,21 +1,26 @@
 using System.Text;
+
 using API.Data;
 using API.Middleware;
+
 using Application.Common;
 using Application.Interface;
 using Application.Repository;
 using Application.Services;
 using Application.Settings;
+
 using Infrastructure.FileSystem;
 using Infrastructure.Persistence;
 using Infrastructure.Repository;
 using Infrastructure.Users;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
 using QuestPDF;
 using QuestPDF.Infrastructure;
 
@@ -88,7 +93,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 builder
     .Services.AddAuthorizationBuilder()
-    .AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"))
+        .AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"))
     .AddPolicy("RequireManagerOrAbove", policy => policy.RequireRole("Admin", "Manager"))
     .AddPolicy("RequireUserOrAbove", policy => policy.RequireRole("Admin", "Manager", "User"))
     .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
@@ -100,7 +105,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    _ = app.MapOpenApi();
 }
 
 app.UseStaticFiles();

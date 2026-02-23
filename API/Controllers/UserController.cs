@@ -4,6 +4,8 @@ using Application.Dtos.Request;
 using Application.Dtos.Response;
 using Application.Interface;
 
+using Domain.Entity;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,10 +36,18 @@ public class UserController(
     }
 
     [Authorize]
-    [HttpPut("update")]
-    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto dto)
+    [HttpGet]
+    public async Task<IActionResult> GetUser([FromQuery] string usernameOrEmail)
     {
-        var result = await userService.UpdateUser(User, dto);
+        User result = await userService.GetUser(usernameOrEmail);
+        return Ok(new { result });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto dto)
+    {
+        var result = await userService.UpdateUser(id, dto);
         return Ok(new UserResponse(result));
     }
 
