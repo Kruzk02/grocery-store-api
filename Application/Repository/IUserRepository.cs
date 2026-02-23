@@ -17,5 +17,6 @@ public interface IUserRepository
     Task<bool> UpdateEmail(User user, string email);
     Task<bool> UpdateUsername(User user, string username);
     Task<bool> UpdatePassword(User user, string password);
+    Task<bool> UpdateRoles(User user, string role);
     Task<bool> Delete(User user);
 }

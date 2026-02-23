@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Application.Repository;
 
 using Domain.Entity;
+using Domain.Exception;
 
 using Infrastructure.Persistence;
 using Infrastructure.Users;
@@ -27,7 +28,7 @@ public class UserRepository(ApplicationDbContext ctx, UserManager<ApplicationUse
         if (!result.Succeeded) throw new Exception($"User creation failed: {result.Errors.Select(e => e.Description).FirstOrDefault()}");
         user.Id = appUser.Id;
 
-        var roleResult = await userManager.AddToRoleAsync(appUser, "user");
+        var roleResult = await userManager.AddToRoleAsync(appUser, "Employee");
 
         return roleResult.Succeeded ? user : throw new Exception($"User created, but role assigment failed: {result.Errors.Select(e => e.Description).FirstOrDefault()}");
     }
@@ -114,6 +115,22 @@ public class UserRepository(ApplicationDbContext ctx, UserManager<ApplicationUse
         return true;
     }
 
+    public async Task<bool> UpdateRoles(User user, string role)
+    {
+        ApplicationUser? appUser = await userManager.FindByIdAsync(user.Id) ?? throw new NotFoundException($"User not found with a id: {user.Id}");
+        string[] roles = ["Admin", "Manager", "Employee"];
+
+        if (!roles.Any(r => r.Equals(role, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new Exception($"Unknown role name: {role}");
+        }
+
+        _ = await userManager.RemoveFromRolesAsync(appUser, await GetRoles(user));
+        IdentityResult result = await userManager.AddToRoleAsync(appUser, role);
+
+        return result.Succeeded;
+    }
+
     public async Task<bool> Delete(User user)
     {
         var appUser = await userManager.FindByIdAsync(user.Id);
@@ -121,10 +138,14 @@ public class UserRepository(ApplicationDbContext ctx, UserManager<ApplicationUse
         return result.Succeeded;
     }
 
-    private static User map(ApplicationUser user) => new User
+    private static User map(ApplicationUser user)
     {
-        Id = user.Id,
-        Username = user.UserName!,
-        Email = user.Email!
-    };
+        return new User
+        {
+            Id = user.Id,
+            Username = user.UserName!,
+            Email = user.Email!
+        };
+    }
+
 }
