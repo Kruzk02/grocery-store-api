@@ -1,4 +1,3 @@
-using System.Security.Claims;
 
 using Application.Dtos.Request;
 
@@ -10,6 +9,7 @@ public interface IUserService
 {
     Task<User> CreateUser(RegisterDto dto);
     Task<string> Login(LoginDto dto);
-    Task<string> UpdateUser(ClaimsPrincipal user, UpdateUserDto dto);
+    Task<User> GetUser(string usernameOrEmail);
+    Task<string> UpdateUser(string id, UpdateUserDto dto);
     Task<bool> DeleteUser(string id);
 }
