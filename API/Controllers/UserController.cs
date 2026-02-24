@@ -19,11 +19,11 @@ public class UserController(
     ) : ControllerBase
 {
 
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
-        var result = await userService.CreateUser(dto);
+        _ = await userService.CreateUser(dto);
         return Ok(new UserResponse("Success create user"));
     }
 
@@ -71,7 +71,7 @@ public class UserController(
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var serviceResult = await notificationService.FindByUserId(userId!);
+            List<Notification> serviceResult = await notificationService.FindByUserId(userId!);
             var json = System.Text.Json.JsonSerializer.Serialize(serviceResult);
             await Response.WriteAsync(json);
             await Response.Body.FlushAsync();
