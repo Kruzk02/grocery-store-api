@@ -57,6 +57,34 @@ public class UserService(
 
     }
 
+    public async Task<AuthResponse> RefreshToken(string RefreshToken)
+    {
+        RefreshToken? storedToken = await refreshTokenRepository.FindByToken(RefreshToken) ?? throw new Exception("Invalid refresh token");
+        if (storedToken.IsRevoked || storedToken.ExpiryDate < DateTime.UtcNow)
+        {
+            throw new Exception("Refresh token expired or revoked");
+        }
+
+        User? user = await userRepository.FindById(storedToken.UserId) ?? throw new Exception($"User not found with id:{storedToken.UserId}");
+        IList<string> roles = await userRepository.GetRoles(user);
+
+        storedToken.IsRevoked = true;
+
+        var newRefreshToken = tokenService.GenerateRefreshToken();
+
+        var newRefreshTokenEntity = new RefreshToken
+        {
+            Token = newRefreshToken,
+            UserId = user.Id,
+            ExpiryDate = DateTime.UtcNow.AddDays(7)
+        };
+
+        await refreshTokenRepository.Add(newRefreshTokenEntity);
+        var newACcessToken = tokenService.CreateToken(user, roles);
+
+        return new AuthResponse(newACcessToken, newRefreshToken, newRefreshTokenEntity.ExpiryDate);
+    }
+
     public async Task<string> UpdateUser(string id, UpdateUserDto dto)
     {
         User existingUser = await userRepository.FindById(id) ?? throw new NotFoundException($"User not found");
@@ -113,4 +141,8 @@ public class UserService(
             throw new Exception("Failed to delete user");
     }
 
+    public Task Logout()
+    {
+        throw new NotImplementedException();
+    }
 }

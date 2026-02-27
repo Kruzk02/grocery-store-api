@@ -46,6 +46,28 @@ public class UserController(
     }
 
     [Authorize]
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+        var refreshToken = Request.Cookies["refreshToken"];
+        if (refreshToken == null)
+        {
+            return Unauthorized("Inva;od refresh token");
+        }
+        AuthResponse auth = await userService.RefreshToken(refreshToken);
+
+        Response.Cookies.Append("refreshToken", auth.RefreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = auth.RefreshTokenExpiry
+        });
+
+        return Ok(new TokenResponse(auth.AccessToken));
+    }
+
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetUser([FromQuery] string usernameOrEmail)
     {

@@ -3,6 +3,7 @@ using Application.Dtos.Request;
 
 using Domain.Entity;
 using Application.Dtos.Response;
+using System.Security.Claims;
 
 namespace Application.Interface;
 
@@ -11,6 +12,8 @@ public interface IUserService
     Task<User> CreateUser(RegisterDto dto);
     Task<AuthResponse> Login(LoginDto dto);
     Task<User> GetUser(string usernameOrEmail);
+    Task<AuthResponse> RefreshToken(string RefreshToken);
     Task<string> UpdateUser(string id, UpdateUserDto dto);
+    Task Logout();
     Task<bool> DeleteUser(string id);
 }
