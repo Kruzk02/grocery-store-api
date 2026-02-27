@@ -19,12 +19,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<Category>().HasData(
+        _ = builder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Fresh Produce", Description = "Fruits, vegetables, herbs" },
             new Category { Id = 2, Name = "Dairy & Eggs", Description = "Milk, cheese, yogurt, eggs" },
             new Category { Id = 3, Name = "Meat & Seafood", Description = "Fresh meat, poultry, seafood" },

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 
 using Application.Dtos.Request;
+using Application.Dtos.Response;
 using Application.Interface;
 using Application.Repository;
 
@@ -11,6 +12,7 @@ namespace Application.Services;
 
 public class UserService(
     IUserRepository userRepository,
+    IRefreshTokenRepository refreshTokenRepository,
     TokenService tokenService
     ) : IUserService
 {
@@ -26,7 +28,7 @@ public class UserService(
         return result;
     }
 
-    public async Task<string> Login(LoginDto dto)
+    public async Task<AuthResponse> Login(LoginDto dto)
     {
         User? user = await GetUser(dto.UserNameOrEmail);
         var result = await userRepository.CheckPasswordSignIn(user, dto.Password);
@@ -36,8 +38,17 @@ public class UserService(
         }
 
         IList<string> roles = await userRepository.GetRoles(user);
-        var token = await tokenService.CreateToken(user, roles);
-        return token;
+        var accessToken = tokenService.CreateToken(user, roles);
+        var refreshToken = tokenService.GenerateRefreshToken();
+        var refreshTokenEntity = new RefreshToken {
+            Token = refreshToken,
+            UserId = user.Id,
+            ExpiryDate = DateTime.UtcNow.AddDays(7)
+        };
+
+        _ = refreshTokenRepository.Add(refreshTokenEntity);
+
+        return new AuthResponse(accessToken, refreshToken, refreshTokenEntity.ExpiryDate);
     }
 
     public async Task<User> GetUser(string usernameOrEmail)

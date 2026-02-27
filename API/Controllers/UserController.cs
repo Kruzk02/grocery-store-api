@@ -31,8 +31,18 @@ public class UserController(
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
-        var result = await userService.Login(dto);
-        return Ok(new TokenResponse(result));
+        AuthResponse authResponse = await userService.Login(dto);
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = false,
+            SameSite = SameSiteMode.Strict,
+            Expires = authResponse.RefreshTokenExpiry
+        };
+
+        Response.Cookies.Append("refreshToken", authResponse.RefreshToken, cookieOptions);
+
+        return Ok(new TokenResponse(authResponse.AccessToken));
     }
 
     [Authorize]

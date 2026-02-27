@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 
 using Application.Settings;
 
@@ -14,7 +15,7 @@ public class TokenService(IOptions<JwtSettings> config)
 {
     private readonly JwtSettings _jwtSettings = config.Value;
 
-    public async Task<string> CreateToken(User user, IList<string> roles)
+    public string CreateToken(User user, IList<string> roles)
     {
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -32,9 +33,17 @@ public class TokenService(IOptions<JwtSettings> config)
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
+            expires: DateTime.UtcNow.AddMinutes(15),
             signingCredentials: cred);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
     }
 }
