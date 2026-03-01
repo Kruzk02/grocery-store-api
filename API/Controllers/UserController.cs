@@ -59,7 +59,7 @@ public class UserController(
         Response.Cookies.Append("refreshToken", auth.RefreshToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
+            Secure = false,
             SameSite = SameSiteMode.Strict,
             Expires = auth.RefreshTokenExpiry
         });
@@ -103,9 +103,14 @@ public class UserController(
 
         await userService.Logout(user);
 
-        Response.Cookies.Delete("refreshToken");
+        Response.Cookies.Delete("refreshToken", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = false,
+            SameSite = SameSiteMode.Strict
+        });
 
-        return Ok();
+        return Ok(new { message = "Logged out successfully" });
     }
 
     [Authorize]
