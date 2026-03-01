@@ -7,5 +7,7 @@ public interface IRefreshTokenRepository
 {
     Task Add(RefreshToken refreshToken);
     Task<RefreshToken?> FindByToken(string RefreshToken);
-    Task RevokeTokenByUserId(string UserId);
+    Task<List<RefreshToken>> FindAllByUserId(string userId);
+    Task RevokeTokenByUserId(string userId);
+    Task DeleteByToken(RefreshToken refreshToken);
 }

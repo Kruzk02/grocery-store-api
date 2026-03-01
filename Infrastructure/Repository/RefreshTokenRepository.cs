@@ -22,9 +22,14 @@ public class RefreshTokenRepository(ApplicationDbContext dbContext) : IRefreshTo
             .FirstOrDefaultAsync(x => x.Token == RefreshToken);
     }
 
-    public async Task RevokeTokenByUserId(string UserId)
+    public async Task<List<RefreshToken>> FindAllByUserId(string userId)
     {
-        RefreshToken[] userTokens = await dbContext.RefreshTokens.Where(x => x.UserId == UserId && !x.IsRevoked).ToArrayAsync();
+        return await dbContext.RefreshTokens.Where(x => x.UserId == userId).ToListAsync();
+    }
+
+    public async Task RevokeTokenByUserId(string userId)
+    {
+        List<RefreshToken> userTokens = await dbContext.RefreshTokens.Where(x => x.UserId == userId && !x.IsRevoked).ToListAsync();
 
         foreach (RefreshToken token in userTokens)
         {
@@ -32,6 +37,12 @@ public class RefreshTokenRepository(ApplicationDbContext dbContext) : IRefreshTo
             token.RevokedAt = DateTime.UtcNow;
         }
 
+        _ = await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteByToken(RefreshToken refreshToken)
+    {
+        _ = dbContext.RefreshTokens.Remove(refreshToken);
         _ = await dbContext.SaveChangesAsync();
     }
 }
