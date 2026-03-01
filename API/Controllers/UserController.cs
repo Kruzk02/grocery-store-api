@@ -102,6 +102,9 @@ public class UserController(
         }
 
         await userService.Logout(user);
+
+        Response.Cookies.Delete("refreshToken");
+
         return Ok();
     }
 
