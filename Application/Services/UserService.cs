@@ -144,14 +144,7 @@ public class UserService(
     public async Task Logout(ClaimsPrincipal claims)
     {
         var userId = (claims.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new Exception("Failed to extract userId from ClaimsPrincipal");
+        await refreshTokenRepository.DeleteAllByUserId(userId);
 
-        await refreshTokenRepository.RevokeTokenByUserId(userId);
-
-        List<RefreshToken> refreshTokens = await refreshTokenRepository.FindAllByUserId(userId);
-
-        foreach (RefreshToken refreshToken in refreshTokens)
-        {
-            await refreshTokenRepository.DeleteByToken(refreshToken);
-        }
     }
 }

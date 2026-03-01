@@ -22,11 +22,6 @@ public class RefreshTokenRepository(ApplicationDbContext dbContext) : IRefreshTo
             .FirstOrDefaultAsync(x => x.Token == RefreshToken);
     }
 
-    public async Task<List<RefreshToken>> FindAllByUserId(string userId)
-    {
-        return await dbContext.RefreshTokens.Where(x => x.UserId == userId).ToListAsync();
-    }
-
     public async Task RevokeTokenByUserId(string userId)
     {
         List<RefreshToken> userTokens = await dbContext.RefreshTokens.Where(x => x.UserId == userId && !x.IsRevoked).ToListAsync();
@@ -40,9 +35,8 @@ public class RefreshTokenRepository(ApplicationDbContext dbContext) : IRefreshTo
         _ = await dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteByToken(RefreshToken refreshToken)
+    public async Task DeleteAllByUserId(string userId)
     {
-        _ = dbContext.RefreshTokens.Remove(refreshToken);
-        _ = await dbContext.SaveChangesAsync();
+        _ = await dbContext.RefreshTokens.Where(x => x.UserId == userId).ExecuteDeleteAsync();
     }
 }
