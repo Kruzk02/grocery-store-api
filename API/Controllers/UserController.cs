@@ -92,6 +92,20 @@ public class UserController(
     }
 
     [Authorize]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        ClaimsPrincipal user = HttpContext.User;
+        if (user.Identity != null && !user.Identity.IsAuthenticated)
+        {
+            return Unauthorized();
+        }
+
+        await userService.Logout(user);
+        return Ok();
+    }
+
+    [Authorize]
     [HttpGet("notifications")]
     public async Task FindNotificationByUserId()
     {

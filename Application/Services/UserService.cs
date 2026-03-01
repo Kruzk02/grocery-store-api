@@ -141,8 +141,17 @@ public class UserService(
             throw new Exception("Failed to delete user");
     }
 
-    public Task Logout()
+    public async Task Logout(ClaimsPrincipal claims)
     {
-        throw new NotImplementedException();
+        var userId = (claims.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new Exception("Failed to extract userId from ClaimsPrincipal");
+
+        await refreshTokenRepository.RevokeTokenByUserId(userId);
+
+        List<RefreshToken> refreshTokens = await refreshTokenRepository.FindAllByUserId(userId);
+
+        foreach (RefreshToken refreshToken in refreshTokens)
+        {
+            await refreshTokenRepository.DeleteByToken(refreshToken);
+        }
     }
 }
