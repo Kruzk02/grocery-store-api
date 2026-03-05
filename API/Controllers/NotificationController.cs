@@ -19,7 +19,7 @@ public class NotificationController(INotificationService notificationService) : 
     [ProducesResponseType(500)]
     public async Task<IActionResult> DeleteNotification(int id)
     {
-        await notificationService.DeleteById(id);
+        _ = await notificationService.DeleteById(id);
         return NoContent();
     }
 
@@ -29,7 +29,7 @@ public class NotificationController(INotificationService notificationService) : 
     [ProducesResponseType(500)]
     public async Task<IActionResult> MarkAsRead(int id)
     {
-        var result = await notificationService.MarkAsRead(id);
+        Notification result = await notificationService.MarkAsRead(id);
         return Ok(result);
     }
 
@@ -44,7 +44,7 @@ public class NotificationController(INotificationService notificationService) : 
         {
             return BadRequest();
         }
-        var result = await notificationService.MarkAllAsRead(userId);
+        List<Notification> result = await notificationService.MarkAllAsRead(userId);
         return Ok(result);
     }
 }
