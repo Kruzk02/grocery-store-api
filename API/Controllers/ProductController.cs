@@ -49,7 +49,7 @@ public class ProductController(IProductService productService, IOrderItemService
     [ProducesResponseType(500)]
     public async Task<IActionResult> FindProducts([FromQuery] string? name, [FromQuery] int skip = 0, [FromQuery] int take = 10)
     {
-        var (total, data) = await productService.SearchProducts(name, skip, take);
+        (var total, List<Product>? data) = await productService.SearchProducts(name, skip, take);
         return Ok(new { total, data });
     }
 
@@ -67,19 +67,20 @@ public class ProductController(IProductService productService, IOrderItemService
     [ProducesResponseType(typeof(Product), 201)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromForm] CreatedProductDto createdProductDto)
     {
-        string filename = "";
+        var filename = "";
         if (createdProductDto.photo != null)
         {
-            using var stream = createdProductDto.photo.OpenReadStream();
+            using Stream stream = createdProductDto.photo.OpenReadStream();
 
             filename = await imageStorage.Save(stream, Path.GetExtension(createdProductDto.photo.FileName));
         }
 
         ProductDto productDto = new(createdProductDto.Name, createdProductDto.Description, createdProductDto.Price, createdProductDto.CategoryId, createdProductDto.Quantity, filename);
 
-        var result = await productService.Create(productDto);
+        Product result = await productService.Create(productDto);
         return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
     }
 
@@ -90,19 +91,25 @@ public class ProductController(IProductService productService, IOrderItemService
     public IActionResult GetImage(string filename)
     {
         if (string.IsNullOrWhiteSpace(filename))
+        {
             return BadRequest();
+        }
 
         var path = imageStorage.GetImage(filename);
 
         if (!System.IO.File.Exists(path))
+        {
             return NotFound();
+        }
 
         var extension = Path.GetExtension(filename);
 
         var contentTypeProvider = new FileExtensionContentTypeProvider();
 
         if (!contentTypeProvider.TryGetContentType(filename, out var contentType))
+        {
             contentType = "application/octet-stream";
+        }
 
         return PhysicalFile(path, contentType, enableRangeProcessing: true);
     }
@@ -124,17 +131,19 @@ public class ProductController(IProductService productService, IOrderItemService
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
     [ProducesResponseType(500)]
+    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Manager")]
     public async Task<IActionResult> Update(int id, [FromForm] UpdatedProductDto updatedProductDto)
     {
-        string filename = "";
+        var filename = "";
         if (updatedProductDto.photo != null)
         {
-            using var stream = updatedProductDto.photo.OpenReadStream();
+            using Stream stream = updatedProductDto.photo.OpenReadStream();
             filename = await imageStorage.Save(stream, Path.GetExtension(updatedProductDto.photo.FileName));
         }
 
         ProductDto productDto = new(updatedProductDto.Name, updatedProductDto.Description, updatedProductDto.Price, updatedProductDto.CategoryId, updatedProductDto.Quantity, filename);
-        var result = await productService.Update(id, productDto);
+        Product result = await productService.Update(id, productDto);
         return Ok(result);
     }
 
@@ -154,7 +163,7 @@ public class ProductController(IProductService productService, IOrderItemService
     [ProducesResponseType(500)]
     public async Task<IActionResult> FindById(int id)
     {
-        var result = await productService.FindById(id);
+        Product result = await productService.FindById(id);
         return Ok(result);
     }
 
@@ -164,7 +173,7 @@ public class ProductController(IProductService productService, IOrderItemService
     [ProducesResponseType(500)]
     public async Task<IActionResult> FindOrderItemById(int id)
     {
-        var result = await itemService.FindByProductId(id);
+        List<OrderItem> result = await itemService.FindByProductId(id);
         return Ok(result);
     }
 
@@ -182,6 +191,7 @@ public class ProductController(IProductService productService, IOrderItemService
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
     [ProducesResponseType(500)]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteById(int id)
     {
         var result = await productService.DeleteById(id);
