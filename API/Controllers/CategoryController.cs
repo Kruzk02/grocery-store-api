@@ -26,5 +26,8 @@ public class CategoryController(ICategoryService service) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(List<Category>), 200)]
     [ProducesResponseType(500)]
-    public async Task<IActionResult> GetAll() => Ok(await service.FindAll());
+    public async Task<IActionResult> GetAll()
+    {
+        return Ok(await service.FindAll());
+    }
 }
