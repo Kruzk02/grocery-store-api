@@ -23,7 +23,7 @@ public class OrderController(IOrderService orderService, IOrderItemService itemS
      Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] OrderDto orderDto)
     {
-        var result = await orderService.Create(orderDto);
+        Order result = await orderService.Create(orderDto);
 
         return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
     }
@@ -33,10 +33,11 @@ public class OrderController(IOrderService orderService, IOrderItemService itemS
      ProducesResponseType(400),
      ProducesResponseType(404),
      ProducesResponseType(500),
-     Authorize(Roles = "Admin")]
+     Authorize(Roles = "Admin"),
+     Authorize(Roles = "Manager")]
     public async Task<IActionResult> Update(int id, [FromBody] OrderDto orderDto)
     {
-        var result = await orderService.Update(id, orderDto);
+        Order result = await orderService.Update(id, orderDto);
         return Ok(result);
     }
 
@@ -46,7 +47,7 @@ public class OrderController(IOrderService orderService, IOrderItemService itemS
      ProducesResponseType(500)]
     public async Task<IActionResult> FindById(int id)
     {
-        var result = await orderService.FindById(id);
+        Order result = await orderService.FindById(id);
         return Ok(result);
     }
 
@@ -56,7 +57,7 @@ public class OrderController(IOrderService orderService, IOrderItemService itemS
      ProducesResponseType(500)]
     public async Task<IActionResult> FindOrderItemById(int id)
     {
-        var result = await itemService.FindByOrderId(id);
+        List<OrderItem> result = await itemService.FindByOrderId(id);
         return Ok(result);
     }
 
@@ -66,7 +67,7 @@ public class OrderController(IOrderService orderService, IOrderItemService itemS
      ProducesResponseType(500)]
     public async Task<IActionResult> FindInvoiceById(int id)
     {
-        var result = await invoiceService.FindByOrderId(id);
+        Invoice result = await invoiceService.FindByOrderId(id);
         var document = new InvoiceDocument(result);
         var pdf = document.GeneratePdf();
         return File(pdf, "application/pdf");
