@@ -18,7 +18,7 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerBase
      Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] InvoiceDto invoiceDto)
     {
-        var result = await invoiceService.Create(invoiceDto);
+        Invoice result = await invoiceService.Create(invoiceDto);
         return CreatedAtAction(nameof(FindById), new { id = result.Id }, result);
     }
 
@@ -28,7 +28,7 @@ public class InvoiceController(IInvoiceService invoiceService) : ControllerBase
      ProducesResponseType(500)]
     public async Task<IActionResult> FindById(int id)
     {
-        var result = await invoiceService.FindById(id);
+        Invoice result = await invoiceService.FindById(id);
         return Ok(result);
     }
 }
