@@ -50,11 +50,18 @@ public class UserController(
     public async Task<IActionResult> Refresh()
     {
         var refreshToken = Request.Cookies["refreshToken"];
-        if (refreshToken == null)
+
+        if (string.IsNullOrEmpty(refreshToken))
         {
-            return Unauthorized("Inva;od refresh token");
+            return Unauthorized("Invalid refresh token");
         }
+
         AuthResponse auth = await userService.RefreshToken(refreshToken);
+
+        if (auth == null)
+        {
+            return Unauthorized("Invalid refresh token");
+        }
 
         Response.Cookies.Append("refreshToken", auth.RefreshToken, new CookieOptions
         {
