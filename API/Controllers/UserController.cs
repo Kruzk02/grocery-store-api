@@ -35,7 +35,7 @@ public class UserController(
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = false,
+            Secure = true,
             SameSite = SameSiteMode.Strict,
             Expires = authResponse.RefreshTokenExpiry
         };
@@ -106,7 +106,7 @@ public class UserController(
         Response.Cookies.Delete("refreshToken", new CookieOptions
         {
             HttpOnly = true,
-            Secure = false,
+            Secure = true,
             SameSite = SameSiteMode.Strict
         });
 
