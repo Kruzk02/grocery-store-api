@@ -59,7 +59,7 @@ public class UserController(
         Response.Cookies.Append("refreshToken", auth.RefreshToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = false,
+            Secure = true,
             SameSite = SameSiteMode.Strict,
             Expires = auth.RefreshTokenExpiry
         });
