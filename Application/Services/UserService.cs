@@ -37,10 +37,10 @@ public class UserService(
             throw new ValidationException(new Dictionary<string, string[]> { { "Password", ["Invalid password"] } });
         }
 
-        IList<string> roles = await userRepository.GetRoles(user);
-        var accessToken = tokenService.CreateToken(user, roles);
-        var refreshToken = tokenService.GenerateRefreshToken();
-        var refreshTokenEntity = new RefreshToken {
+        var accessToken = tokenService.CreateToken(user);
+        var refreshToken = TokenService.GenerateRefreshToken();
+        var refreshTokenEntity = new RefreshToken
+        {
             Token = refreshToken,
             UserId = user.Id,
             ExpiryDate = DateTime.UtcNow.AddDays(7)
@@ -54,7 +54,6 @@ public class UserService(
     public async Task<User> GetUser(string usernameOrEmail)
     {
         return (await userRepository.FindByUsername(usernameOrEmail) ?? await userRepository.FindByEmail(usernameOrEmail)) ?? throw new NotFoundException($"User with username or email: {usernameOrEmail} not found");
-
     }
 
     public async Task<AuthResponse> RefreshToken(string RefreshToken)
@@ -66,11 +65,10 @@ public class UserService(
         }
 
         User? user = await userRepository.FindById(storedToken.UserId) ?? throw new Exception($"User not found with id:{storedToken.UserId}");
-        IList<string> roles = await userRepository.GetRoles(user);
 
         storedToken.IsRevoked = true;
 
-        var newRefreshToken = tokenService.GenerateRefreshToken();
+        var newRefreshToken = TokenService.GenerateRefreshToken();
 
         var newRefreshTokenEntity = new RefreshToken
         {
@@ -80,7 +78,7 @@ public class UserService(
         };
 
         await refreshTokenRepository.Add(newRefreshTokenEntity);
-        var newACcessToken = tokenService.CreateToken(user, roles);
+        var newACcessToken = tokenService.CreateToken(user);
 
         return new AuthResponse(newACcessToken, newRefreshToken, newRefreshTokenEntity.ExpiryDate);
     }

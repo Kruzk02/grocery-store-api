@@ -15,7 +15,7 @@ public class TokenService(IOptions<JwtSettings> config)
 {
     private readonly JwtSettings _jwtSettings = config.Value;
 
-    public string CreateToken(User user, IList<string> roles)
+    public string CreateToken(User user)
     {
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -27,7 +27,7 @@ public class TokenService(IOptions<JwtSettings> config)
             new(JwtRegisteredClaimNames.Email, user.Email!),
         };
 
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        claims.AddRange(user.Roles!.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var token = new JwtSecurityToken(
             issuer: _jwtSettings.Issuer,
@@ -39,7 +39,7 @@ public class TokenService(IOptions<JwtSettings> config)
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string GenerateRefreshToken()
+    public static string GenerateRefreshToken()
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();
