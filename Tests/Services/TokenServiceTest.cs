@@ -14,7 +14,7 @@ public class TokenServiceTest
 {
     [Test]
     [TestCaseSource(nameof(CreateApplicationUser))]
-    public async Task CreateToken_ShouldReturn_ValidJwtToken(User user)
+    public void CreateTokenShouldReturnValidJwtToken(User user)
     {
         var jwtSettings = new JwtSettings
         {
@@ -24,16 +24,16 @@ public class TokenServiceTest
         };
 
 
-        var options = Options.Create(jwtSettings);
+        IOptions<JwtSettings> options = Options.Create(jwtSettings);
 
         var tokenService = new TokenService(options);
 
-        var token = tokenService.CreateToken(user, new[] { "user" });
+        var token = tokenService.CreateToken(user);
 
         Assert.That(string.IsNullOrWhiteSpace(token), Is.False);
 
         var handler = new JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(token);
+        JwtSecurityToken jwt = handler.ReadJwtToken(token);
 
         using (Assert.EnterMultipleScope())
         {
@@ -50,6 +50,7 @@ public class TokenServiceTest
             Id = "123",
             Username = "testuser",
             Email = "test@example.com",
+            Roles = ["Admin"]
         };
 
         yield return new User
@@ -57,6 +58,7 @@ public class TokenServiceTest
             Id = "456",
             Username = "testuser123",
             Email = "test@example.com",
+            Roles = ["Employee"]
         };
 
         yield return new User
@@ -64,6 +66,7 @@ public class TokenServiceTest
             Id = "789",
             Username = "testuser456",
             Email = "test@example.com",
+            Roles = ["Manager"]
         };
     }
 }
