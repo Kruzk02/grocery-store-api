@@ -102,8 +102,6 @@ public class ProductController(IProductService productService, IOrderItemService
             return NotFound();
         }
 
-        var extension = Path.GetExtension(filename);
-
         var contentTypeProvider = new FileExtensionContentTypeProvider();
 
         if (!contentTypeProvider.TryGetContentType(filename, out var contentType))
