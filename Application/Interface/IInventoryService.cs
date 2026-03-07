@@ -29,6 +29,9 @@ public interface IInventoryService
     /// </summary>
     /// <param name="id">The identifier of the inventory to retrieve</param>
     Task<Inventory> FindById(int id);
+
+    Task<List<Inventory>> FindByProductId(int ProductId);
+    Task<List<Inventory>> FindByQuantity(int Quantity);
     /// <summary>
     /// Asynchronously deletes an inventory by its identifier from the database.
     /// </summary>
