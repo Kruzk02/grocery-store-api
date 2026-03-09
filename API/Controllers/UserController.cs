@@ -79,7 +79,7 @@ public class UserController(
     public async Task<IActionResult> GetUser([FromQuery] string usernameOrEmail)
     {
         User result = await userService.GetUser(usernameOrEmail);
-        return Ok(new { result });
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
