@@ -76,8 +76,13 @@ public class UserController(
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetUser([FromQuery] string usernameOrEmail)
+    public async Task<IActionResult> GetUser([FromQuery] string? usernameOrEmail)
     {
+        if (usernameOrEmail == null)
+        {
+            ClaimsPrincipal user = HttpContext.User;
+            return user.Identity != null && !user.Identity.IsAuthenticated ? Unauthorized() : Ok(await userService.GetUser(user.Identity.Name));
+        }
         User result = await userService.GetUser(usernameOrEmail);
         return Ok(result);
     }
