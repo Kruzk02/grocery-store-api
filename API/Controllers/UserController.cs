@@ -78,12 +78,18 @@ public class UserController(
     [HttpGet]
     public async Task<IActionResult> GetUser([FromQuery] string? usernameOrEmail)
     {
-        if (usernameOrEmail == null)
+        ClaimsPrincipal user = HttpContext.User;
+
+        if (user?.Identity == null || !user.Identity.IsAuthenticated)
         {
-            ClaimsPrincipal user = HttpContext.User;
-            return user.Identity != null && !user.Identity.IsAuthenticated ? Unauthorized() : Ok(await userService.GetUser(user.Identity.Name));
+            return Unauthorized();
         }
-        User result = await userService.GetUser(usernameOrEmail);
+
+        var lookupKey = string.IsNullOrWhiteSpace(usernameOrEmail)
+            ? user.Identity.Name
+            : usernameOrEmail;
+
+        User result = await userService.GetUser(lookupKey);
         return Ok(result);
     }
 
