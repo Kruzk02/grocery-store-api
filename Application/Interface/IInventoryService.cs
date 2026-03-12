@@ -31,7 +31,7 @@ public interface IInventoryService
     Task<Inventory> FindById(int id);
 
     Task<List<Inventory>> FindByProductId(int ProductId);
-    Task<List<Inventory>> FindByQuantity(int Quantity);
+    Task<List<Inventory>> FindByStock(int Stock);
     /// <summary>
     /// Asynchronously deletes an inventory by its identifier from the database.
     /// </summary>

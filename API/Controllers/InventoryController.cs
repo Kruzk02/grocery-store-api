@@ -46,10 +46,10 @@ public class InventoryController(IInventoryService service) : ControllerBase
         return Ok(await service.FindByProductId(ProductId));
     }
 
-    [HttpGet("quantity/{Quantity}"), ProducesResponseType(typeof(List<Inventory>), 200), ProducesResponseType(404), ProducesResponseType(500)]
-    public async Task<IActionResult> FindByQuantity(int Quantity)
+    [HttpGet("stock/{Stock}"), ProducesResponseType(typeof(List<Inventory>), 200), ProducesResponseType(404), ProducesResponseType(500)]
+    public async Task<IActionResult> FindByStock(int Stock)
     {
-        return Ok(await service.FindByQuantity(Quantity));
+        return Ok(await service.FindByStock(Stock));
     }
 
     [HttpDelete("{id:int}"), ProducesResponseType(204), ProducesResponseType(404), ProducesResponseType(500)]

@@ -46,7 +46,7 @@ public class InventoryServiceTest
             Assert.That(result.Id, Is.EqualTo(1));
             Assert.That(result.ProductId, Is.EqualTo(product.Id));
             Assert.That(result.Product, Is.EqualTo(product));
-            Assert.That(result.Quantity, Is.EqualTo(20));
+            Assert.That(result.Stock, Is.EqualTo(20));
         }
     }
 
@@ -80,7 +80,7 @@ public class InventoryServiceTest
             Assert.That(result.Id, Is.EqualTo(inventory.Id));
             Assert.That(result.ProductId, Is.EqualTo(inventory.ProductId));
             Assert.That(result.Product, Is.EqualTo(inventory.Product));
-            Assert.That(result.Quantity, Is.EqualTo(10));
+            Assert.That(result.Stock, Is.EqualTo(10));
         }
     }
 
@@ -132,7 +132,7 @@ public class InventoryServiceTest
             Assert.That(result.Id, Is.EqualTo(inventory.Id));
             Assert.That(result.ProductId, Is.EqualTo(inventory.ProductId));
             Assert.That(result.Product, Is.EqualTo(inventory.Product));
-            Assert.That(result.Quantity, Is.EqualTo(inventory.Quantity));
+            Assert.That(result.Stock, Is.EqualTo(inventory.Stock));
         }
     }
 
@@ -168,7 +168,7 @@ public class InventoryServiceTest
             Assert.That(result[0].Id, Is.EqualTo(inventory.Id));
             Assert.That(result[0].ProductId, Is.EqualTo(inventory.ProductId));
             Assert.That(result[0].Product, Is.EqualTo(inventory.Product));
-            Assert.That(result[0].Quantity, Is.EqualTo(inventory.Quantity));
+            Assert.That(result[0].Stock, Is.EqualTo(inventory.Stock));
         }
     }
 
@@ -189,7 +189,7 @@ public class InventoryServiceTest
             Assert.That(result[0].Id, Is.EqualTo(inventory.Id));
             Assert.That(result[0].ProductId, Is.EqualTo(inventory.ProductId));
             Assert.That(result[0].Product, Is.EqualTo(inventory.Product));
-            Assert.That(result[0].Quantity, Is.EqualTo(inventory.Quantity));
+            Assert.That(result[0].Stock, Is.EqualTo(inventory.Stock));
         }
     }
 

@@ -10,6 +10,6 @@ public class Inventory
     public int ProductId { get; set; }
     [ForeignKey(nameof(ProductId))]
     public required Product Product { get; set; }
-    public int Quantity { get; set; }
+    public int Stock { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

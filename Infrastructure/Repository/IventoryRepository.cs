@@ -14,7 +14,10 @@ public class InventoryRepository(ApplicationDbContext ctx) : IInventoryRepositor
 {
     public async Task<List<Inventory>> FindAll()
     {
-        return await ctx.Inventories.ToListAsync();
+        return await ctx.Inventories
+            .Include(i => i.Product)
+                .ThenInclude(p => p.Category)
+            .ToListAsync();
     }
 
     public async Task<Inventory> Add(Inventory inventory)
@@ -43,17 +46,17 @@ public class InventoryRepository(ApplicationDbContext ctx) : IInventoryRepositor
             .ToListAsync();
     }
 
-    public async Task<List<Inventory>> FindByQuantity(int Quantity)
+    public async Task<List<Inventory>> FindByStock(int Stock)
     {
         return await ctx.Inventories
-            .Where(i => i.Quantity == Quantity)
+            .Where(i => i.Stock == Stock)
             .Include(i => i.Product)
             .ToListAsync();
     }
 
     public async Task<Inventory?> FindLessThanTenQuantity(CancellationToken stoppingToken)
     {
-        return await ctx.Inventories.Where(i => i.Quantity <= 10).FirstOrDefaultAsync(stoppingToken);
+        return await ctx.Inventories.Where(i => i.Stock <= 10).FirstOrDefaultAsync(stoppingToken);
     }
 
     public async Task Delete(Inventory inventory)

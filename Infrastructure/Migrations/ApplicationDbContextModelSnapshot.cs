@@ -175,7 +175,7 @@ namespace Infrastructure.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("Stock")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")

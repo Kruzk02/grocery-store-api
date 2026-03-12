@@ -10,7 +10,7 @@ public interface IInventoryRepository
     Task Update(Inventory inventory);
     Task<Inventory?> FindById(int Id);
     Task<List<Inventory>> FindByProductId(int ProductId);
-    Task<List<Inventory>> FindByQuantity(int Quantity);
+    Task<List<Inventory>> FindByStock(int Stock);
     Task<Inventory?> FindLessThanTenQuantity(CancellationToken stoppingToken);
     Task Delete(Inventory inventory);
 }

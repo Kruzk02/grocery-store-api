@@ -49,7 +49,7 @@ public class InventoryService(IInventoryRepository inventoryRepository, IProduct
         {
             Product = product,
             ProductId = product.Id,
-            Quantity = inventoryDto.Quantity,
+            Stock = inventoryDto.Stock,
             UpdatedAt = DateTime.UtcNow
         };
 
@@ -60,9 +60,9 @@ public class InventoryService(IInventoryRepository inventoryRepository, IProduct
     public async Task<Inventory> Update(int id, InventoryDto inventoryDto)
     {
         Inventory? inventory = await inventoryRepository.FindById(id) ?? throw new NotFoundException($"Inventory with id: {id} not found");
-        if (inventoryDto.Quantity >= 0 && inventoryDto.Quantity != inventory.Quantity)
+        if (inventoryDto.Stock >= 0 && inventoryDto.Stock != inventory.Stock)
         {
-            inventory.Quantity = inventoryDto.Quantity;
+            inventory.Stock = inventoryDto.Stock;
         }
 
         if (inventoryDto.ProductId != inventory.ProductId)
@@ -123,9 +123,9 @@ public class InventoryService(IInventoryRepository inventoryRepository, IProduct
         return inventories;
     }
 
-    public async Task<List<Inventory>> FindByQuantity(int Quantity)
+    public async Task<List<Inventory>> FindByStock(int Stock)
     {
-        var cacheKey = $"invetory:quantity:{Quantity}";
+        var cacheKey = $"invetory:stock:{Stock}";
         if (cache.TryGetValue(cacheKey, out List<Inventory>? inventories))
         {
             if (inventories != null)
@@ -134,7 +134,7 @@ public class InventoryService(IInventoryRepository inventoryRepository, IProduct
             }
         }
 
-        inventories = await inventoryRepository.FindByQuantity(Quantity);
+        inventories = await inventoryRepository.FindByStock(Stock);
 
         MemoryCacheEntryOptions cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))
