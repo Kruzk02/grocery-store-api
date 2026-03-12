@@ -71,9 +71,9 @@ public class InventoryServiceTest
         _ = _dbContext.Products.Add(product);
         _ = await _dbContext.SaveChangesAsync();
 
-        Inventory inventory = await _inventoryService.Create(new InventoryDto(ProductId: product.Id, Quantity: 20));
+        Inventory inventory = await _inventoryService.Create(new InventoryDto(ProductId: product.Id, Stock: 20));
 
-        Inventory result = await _inventoryService.Update(1, new InventoryDto(ProductId: product.Id, Quantity: 10));
+        Inventory result = await _inventoryService.Update(1, new InventoryDto(ProductId: product.Id, Stock: 10));
 
         using (Assert.EnterMultipleScope())
         {
@@ -105,7 +105,7 @@ public class InventoryServiceTest
         _ = _dbContext.Products.Add(product);
         _ = await _dbContext.SaveChangesAsync();
 
-        _ = await _inventoryService.Create(new InventoryDto(ProductId: product.Id, Quantity: 20));
+        _ = await _inventoryService.Create(new InventoryDto(ProductId: product.Id, Stock: 20));
 
         List<Inventory> result = await _inventoryService.FindAll();
 
@@ -123,7 +123,7 @@ public class InventoryServiceTest
         _ = _dbContext.Products.Add(product);
         _ = await _dbContext.SaveChangesAsync();
 
-        Inventory inventory = await _inventoryService.Create(new InventoryDto(ProductId: product.Id, Quantity: 20));
+        Inventory inventory = await _inventoryService.Create(new InventoryDto(ProductId: product.Id, Stock: 20));
 
         Inventory result = await _inventoryService.FindById(inventory.Id);
 
@@ -181,7 +181,7 @@ public class InventoryServiceTest
 
         Inventory inventory = await _inventoryService.Create(new InventoryDto(product.Id, 20));
 
-        List<Inventory> result = await _inventoryService.FindByQuantity(20);
+        List<Inventory> result = await _inventoryService.FindByStock(20);
 
         using (Assert.EnterMultipleScope())
         {
@@ -200,7 +200,7 @@ public class InventoryServiceTest
         _ = _dbContext.Products.Add(product);
         _ = await _dbContext.SaveChangesAsync();
 
-        Inventory inventory = await _inventoryService.Create(new InventoryDto(ProductId: product.Id, Quantity: 20));
+        Inventory inventory = await _inventoryService.Create(new InventoryDto(ProductId: product.Id, Stock: 20));
 
         var result = await _inventoryService.Delete(inventory.Id);
         Assert.That(result, Is.EqualTo("Inventory deleted successfully"));
