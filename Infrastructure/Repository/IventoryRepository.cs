@@ -1,10 +1,6 @@
-
 using Application.Repository;
-
 using Domain.Entity;
-
 using Infrastructure.Persistence;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -14,8 +10,8 @@ public class InventoryRepository(ApplicationDbContext ctx) : IInventoryRepositor
 {
     public async Task<List<Inventory>> FindAll()
     {
-        return await ctx.Inventories
-            .Include(i => i.Product)
+        return await ctx
+            .Inventories.Include(i => i.Product)
                 .ThenInclude(p => p.Category)
             .ToListAsync();
     }
@@ -40,16 +36,16 @@ public class InventoryRepository(ApplicationDbContext ctx) : IInventoryRepositor
 
     public async Task<List<Inventory>> FindByProductId(int ProductId)
     {
-        return await ctx.Inventories
-            .Where(i => i.ProductId == ProductId)
+        return await ctx
+            .Inventories.Where(i => i.ProductId == ProductId)
             .Include(i => i.Product)
             .ToListAsync();
     }
 
     public async Task<List<Inventory>> FindByStock(int Stock)
     {
-        return await ctx.Inventories
-            .Where(i => i.Stock == Stock)
+        return await ctx
+            .Inventories.Where(i => i.Stock == Stock)
             .Include(i => i.Product)
             .ToListAsync();
     }
