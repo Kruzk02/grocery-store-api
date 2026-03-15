@@ -107,7 +107,7 @@ public class InventoryServiceTest
 
         _ = await _inventoryService.Create(new InventoryDto(ProductId: product.Id, Stock: 20));
 
-        List<Inventory> result = await _inventoryService.FindAll();
+        List<Inventory> result = await _inventoryService.FindAll(0, 10);
 
         using (Assert.EnterMultipleScope())
         {
@@ -240,7 +240,7 @@ public class InventoryServiceTest
             Price = 99.99m,
             CategoryId = 10,
             Category = new Category
-            { Id = 10, Name = "Household & Cleaning", Description = "Detergents, cleaning items" }
+                { Id = 10, Name = "Household & Cleaning", Description = "Detergents, cleaning items" }
         };
         yield return new Product
         {

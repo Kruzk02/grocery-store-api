@@ -8,11 +8,14 @@ namespace Infrastructure.Repository;
 
 public class InventoryRepository(ApplicationDbContext ctx) : IInventoryRepository
 {
-    public async Task<List<Inventory>> FindAll()
+    public async Task<List<Inventory>> FindAll(int skip, int take)
     {
         return await ctx
             .Inventories.Include(i => i.Product)
                 .ThenInclude(p => p.Category)
+            .OrderByDescending(i => i.Id)
+            .Skip(skip)
+            .Take(take)
             .ToListAsync();
     }
 

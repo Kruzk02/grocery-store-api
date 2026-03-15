@@ -19,7 +19,7 @@ namespace Application.Services;
 public class InventoryService(IInventoryRepository inventoryRepository, IProductRepository productRepository, IMemoryCache cache) : IInventoryService
 {
     /// <inheritdoc />
-    public async Task<List<Inventory>> FindAll()
+    public async Task<List<Inventory>> FindAll(int skip, int take)
     {
         const string cacheKey = $"inventories";
         if (cache.TryGetValue(cacheKey, out List<Inventory>? inventories))
@@ -30,7 +30,7 @@ public class InventoryService(IInventoryRepository inventoryRepository, IProduct
             }
         }
 
-        inventories = await inventoryRepository.FindAll();
+        inventories = await inventoryRepository.FindAll(skip, take);
 
         MemoryCacheEntryOptions cacheOption = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromMinutes(10))

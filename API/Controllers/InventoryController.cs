@@ -13,9 +13,9 @@ public class InventoryController(IInventoryService service) : ControllerBase
 {
 
     [HttpGet, ProducesResponseType(typeof(Inventory), 200), ProducesResponseType(500)]
-    public async Task<IActionResult> FindAll()
+    public async Task<IActionResult> FindAll([FromQuery] int skip = 0, [FromQuery] int take = 50)
     {
-        return Ok(await service.FindAll());
+        return Ok(await service.FindAll(skip, take));
     }
 
     [HttpPost, ProducesResponseType(typeof(Inventory), 201), ProducesResponseType(401), ProducesResponseType(500)]

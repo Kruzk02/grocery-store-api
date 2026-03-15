@@ -4,7 +4,7 @@ namespace Application.Repository;
 
 public interface IInventoryRepository
 {
-    Task<List<Inventory>> FindAll();
+    Task<List<Inventory>> FindAll(int skip, int take);
     Task<Inventory> Add(Inventory inventory);
     Task Update(Inventory inventory);
     Task<Inventory?> FindById(int id);

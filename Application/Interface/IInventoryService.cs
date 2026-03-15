@@ -12,7 +12,7 @@ public interface IInventoryService
     /// <summary>
     /// Asynchronously retrieve all inventory from the database.
     /// </summary>
-    Task<List<Inventory>> FindAll();
+    Task<List<Inventory>> FindAll(int skip, int take);
     /// <summary>
     /// Asynchronously creates a new inventory in the database.
     /// </summary>
