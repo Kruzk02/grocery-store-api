@@ -29,23 +29,23 @@ public class InventoryRepository(ApplicationDbContext ctx) : IInventoryRepositor
         _ = await ctx.SaveChangesAsync();
     }
 
-    public async Task<Inventory?> FindById(int Id)
+    public async Task<Inventory?> FindById(int id)
     {
-        return await ctx.Inventories.FindAsync(Id);
+        return await ctx.Inventories.FindAsync(id);
     }
 
-    public async Task<List<Inventory>> FindByProductId(int ProductId)
+    public async Task<List<Inventory>> FindByProductId(int productId)
     {
         return await ctx
-            .Inventories.Where(i => i.ProductId == ProductId)
+            .Inventories.Where(i => i.ProductId == productId)
             .Include(i => i.Product)
             .ToListAsync();
     }
 
-    public async Task<List<Inventory>> FindByStock(int Stock)
+    public async Task<List<Inventory>> FindByStock(int stock)
     {
         return await ctx
-            .Inventories.Where(i => i.Stock == Stock)
+            .Inventories.Where(i => i.Stock == stock)
             .Include(i => i.Product)
             .ToListAsync();
     }
