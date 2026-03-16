@@ -8,10 +8,18 @@ namespace Infrastructure.Repository;
 
 public class InventoryRepository(ApplicationDbContext ctx) : IInventoryRepository
 {
-    public async Task<List<Inventory>> FindAll(int skip, int take)
+    public async Task<List<Inventory>> FindAll(int? productId, int? stock, int skip, int take)
     {
-        return await ctx
-            .Inventories.Include(i => i.Product)
+        IQueryable<Inventory> query = ctx.Inventories;
+
+        if (productId.HasValue)
+            query = query.Where(i => i.ProductId == productId.Value);
+
+        if (stock.HasValue)
+            query = query.Where(i => i.Stock >= stock.Value);
+
+        return await query
+            .Include(i => i.Product)
                 .ThenInclude(p => p.Category)
             .OrderByDescending(i => i.Id)
             .Skip(skip)
@@ -35,22 +43,6 @@ public class InventoryRepository(ApplicationDbContext ctx) : IInventoryRepositor
     public async Task<Inventory?> FindById(int id)
     {
         return await ctx.Inventories.FindAsync(id);
-    }
-
-    public async Task<List<Inventory>> FindByProductId(int productId)
-    {
-        return await ctx
-            .Inventories.Where(i => i.ProductId == productId)
-            .Include(i => i.Product)
-            .ToListAsync();
-    }
-
-    public async Task<List<Inventory>> FindByStock(int stock)
-    {
-        return await ctx
-            .Inventories.Where(i => i.Stock == stock)
-            .Include(i => i.Product)
-            .ToListAsync();
     }
 
     public async Task<Inventory?> FindLessThanTenQuantity(CancellationToken stoppingToken)

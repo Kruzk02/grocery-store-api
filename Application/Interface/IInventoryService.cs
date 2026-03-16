@@ -12,7 +12,7 @@ public interface IInventoryService
     /// <summary>
     /// Asynchronously retrieve all inventory from the database.
     /// </summary>
-    Task<List<Inventory>> FindAll(int skip, int take);
+    Task<List<Inventory>> FindAll(int? productId, int? stock, int skip, int take);
     /// <summary>
     /// Asynchronously creates a new inventory in the database.
     /// </summary>
@@ -29,9 +29,6 @@ public interface IInventoryService
     /// </summary>
     /// <param name="id">The identifier of the inventory to retrieve</param>
     Task<Inventory> FindById(int id);
-
-    Task<List<Inventory>> FindByProductId(int ProductId);
-    Task<List<Inventory>> FindByStock(int Stock);
     /// <summary>
     /// Asynchronously deletes an inventory by its identifier from the database.
     /// </summary>

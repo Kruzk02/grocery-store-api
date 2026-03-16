@@ -19,26 +19,16 @@ namespace Application.Services;
 public class InventoryService(IInventoryRepository inventoryRepository, IProductRepository productRepository, IMemoryCache cache) : IInventoryService
 {
     /// <inheritdoc />
-    public async Task<List<Inventory>> FindAll(int skip, int take)
+    public async Task<List<Inventory>> FindAll(int? productId, int? stock, int skip, int take)
     {
-        const string cacheKey = $"inventories";
-        if (cache.TryGetValue(cacheKey, out List<Inventory>? inventories))
+        var cacheKey = $"inventories:{productId}:{stock}:{skip}:{take}";
+        return await cache.GetOrCreateAsync(cacheKey, async entry =>
         {
-            if (inventories != null)
-            {
-                return inventories;
-            }
-        }
+            entry.SetSlidingExpiration(TimeSpan.FromMinutes(10));
+            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
 
-        inventories = await inventoryRepository.FindAll(skip, take);
-
-        MemoryCacheEntryOptions cacheOption = new MemoryCacheEntryOptions()
-            .SetSlidingExpiration(TimeSpan.FromMinutes(10))
-            .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
-
-        _ = cache.Set(cacheKey, inventories, cacheOption);
-
-        return inventories;
+            return await inventoryRepository.FindAll(productId, stock, skip, take);
+        }) ?? [];
     }
 
     /// <inheritdoc />
@@ -99,50 +89,6 @@ public class InventoryService(IInventoryRepository inventoryRepository, IProduct
         _ = cache.Set(cacheKey, inventory, cacheOption);
 
         return inventory ?? throw new NotFoundException($"Inventory with id: {id} not found");
-    }
-
-    public async Task<List<Inventory>> FindByProductId(int ProductId)
-    {
-        var cacheKey = $"invetory:productId:{ProductId}";
-        if (cache.TryGetValue(cacheKey, out List<Inventory>? inventories))
-        {
-            if (inventories != null)
-            {
-                return inventories;
-            }
-        }
-
-        inventories = await inventoryRepository.FindByProductId(ProductId);
-
-        MemoryCacheEntryOptions cacheOption = new MemoryCacheEntryOptions()
-            .SetSlidingExpiration(TimeSpan.FromMinutes(10))
-            .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
-
-        _ = cache.Set(cacheKey, inventories, cacheOption);
-
-        return inventories;
-    }
-
-    public async Task<List<Inventory>> FindByStock(int Stock)
-    {
-        var cacheKey = $"invetory:stock:{Stock}";
-        if (cache.TryGetValue(cacheKey, out List<Inventory>? inventories))
-        {
-            if (inventories != null)
-            {
-                return inventories;
-            }
-        }
-
-        inventories = await inventoryRepository.FindByStock(Stock);
-
-        MemoryCacheEntryOptions cacheOption = new MemoryCacheEntryOptions()
-            .SetSlidingExpiration(TimeSpan.FromMinutes(10))
-            .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
-
-        _ = cache.Set(cacheKey, inventories, cacheOption);
-
-        return inventories;
     }
 
     /// <inheritdoc />

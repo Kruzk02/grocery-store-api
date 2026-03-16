@@ -13,9 +13,9 @@ public class InventoryController(IInventoryService service) : ControllerBase
 {
 
     [HttpGet, ProducesResponseType(typeof(Inventory), 200), ProducesResponseType(500)]
-    public async Task<IActionResult> FindAll([FromQuery] int skip = 0, [FromQuery] int take = 50)
+    public async Task<IActionResult> FindAll(int? productId, int? stock, [FromQuery] int skip = 0, [FromQuery] int take = 50)
     {
-        return Ok(await service.FindAll(skip, take));
+        return Ok(await service.FindAll(productId, stock, skip, take));
     }
 
     [HttpPost, ProducesResponseType(typeof(Inventory), 201), ProducesResponseType(401), ProducesResponseType(500)]
@@ -38,18 +38,6 @@ public class InventoryController(IInventoryService service) : ControllerBase
     public async Task<IActionResult> FindById(int id)
     {
         return Ok(await service.FindById(id));
-    }
-
-    [HttpGet("of-product/{ProductId}"), ProducesResponseType(typeof(List<Inventory>), 200), ProducesResponseType(404), ProducesResponseType(500)]
-    public async Task<IActionResult> FindByProductId(int ProductId)
-    {
-        return Ok(await service.FindByProductId(ProductId));
-    }
-
-    [HttpGet("stock/{Stock}"), ProducesResponseType(typeof(List<Inventory>), 200), ProducesResponseType(404), ProducesResponseType(500)]
-    public async Task<IActionResult> FindByStock(int Stock)
-    {
-        return Ok(await service.FindByStock(Stock));
     }
 
     [HttpDelete("{id:int}"), ProducesResponseType(204), ProducesResponseType(404), ProducesResponseType(500)]
