@@ -9,7 +9,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Application.Services;
 
-public class CustomerService(ICustomerRepository customerRepository, IMemoryCache cache) : ICustomerService{
+public class CustomerService(ICustomerRepository customerRepository, IMemoryCache cache) : ICustomerService
+{
     public async Task<(int total, List<Customer> data)> SearchCustomers(string? name, int skip, int take)
     {
         return await customerRepository.Search(name, skip, take);
